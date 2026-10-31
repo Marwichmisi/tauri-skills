@@ -1,0 +1,42 @@
+{
+  "skill_name": "tauri-core-concepts",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Je conçois une app Tauri avec secrets d'API et état global partagé entre 2 fenêtres, plus des notifications de changement d'état vers le frontend. En t'appuyant sur les concepts coeur, dis où placer chaque chose (Core Rust vs Webview) et quand utiliser Events vs Commands. Cite tes sources.",
+      "expected_output": "Secrets + état global côté Core Rust (jamais en Frontend), Commands/invoke pour appeler Rust avec retour JSON, Events fire-and-forget pour lifecycle/état, IPC centralisé et filtrable au Core, sources process-model + IPC index citées commit ec113a50 ; architecture : seul le Core a plein accès OS, Webview fournie par l'OS non embarquée",
+      "files": [],
+      "expectations": [
+        "La sortie place secrets et état global côté Core Rust, jamais en Frontend",
+        "La sortie distingue Events (fire-and-forget, lifecycle, émis des deux côtés) vs Commands (invoke style fetch, retour JSON sérialisable)",
+        "La sortie mentionne que l'IPC passe par le Core et peut y être filtré",
+        "La réponse cite concept/process-model.md et concept/Inter-Process Communication/index.mdx commit ec113a50",
+        "La sortie mentionne que seul le Core a plein accès OS et que la Webview est fournie par l'OS (non embarquée)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Mon frontend a des centaines de dépendances imbriquées et appelle des API Tauri externes (lecture fichier, fetch HTTP). Dois-je rester en brownfield ou passer en isolation ? Donne la config tauri.conf.json du pattern choisi et le hook minimal, avec limites.",
+      "expected_output": "Recommandation isolation (menaces dev, vérification inputs), config use isolation + options.dir, hook __TAURI_ISOLATION_HOOK__, limites (iframe sandboxée, ES modules KO sur Windows, simplicité requise), brownfield rappelé comme défaut sans options",
+      "files": [],
+      "expectations": [
+        "La sortie recommande le pattern isolation pour dépendances non fiables et vérification des inputs",
+        "La sortie fournit la config use isolation avec options.dir",
+        "La sortie fournit le hook window.__TAURI_ISOLATION_HOOK__",
+        "La réponse mentionne au moins une limite documentée (ES modules / iframe Windows, ou simplicité requise) et cite brownfield.md + isolation.md commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Mon binaire Tauri est trop gros. Donne le profil Cargo stable qui minimise la taille et l'option tauri.conf.json qui retire les commandes inutilisées, avec prérequis de version et mise en garde.",
+      "expected_output": "Profil stable (codegen-units 1, lto true, opt-level s, panic abort, strip true), removeUnusedCommands true, prérequis tauri@2.4, conseil ACL sans defaults, mise en garde ACL dynamiques runtime",
+      "files": [],
+      "expectations": [
+        "La sortie contient le profil release avec lto true, opt-level s, panic abort, strip true",
+        "La sortie contient build.removeUnusedCommands à true",
+        "La sortie mentionne le prérequis tauri@2.4 et la mise en garde ACL dynamiques runtime",
+        "La réponse cite concept/size.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

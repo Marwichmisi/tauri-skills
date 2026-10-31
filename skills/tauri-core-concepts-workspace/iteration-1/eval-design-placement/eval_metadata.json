@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "design-placement",
+  "prompt": "Je conçois une app Tauri avec secrets d'API et état global partagé entre 2 fenêtres, plus des notifications de changement d'état vers le frontend. En t'appuyant sur les concepts coeur, dis où placer chaque chose (Core Rust vs Webview) et quand utiliser Events vs Commands. Cite tes sources.",
+  "assertions": []
+}

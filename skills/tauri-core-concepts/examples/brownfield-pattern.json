@@ -1,0 +1,9 @@
+{
+  "app": {
+    "security": {
+      "pattern": {
+        "use": "brownfield"
+      }
+    }
+  }
+}

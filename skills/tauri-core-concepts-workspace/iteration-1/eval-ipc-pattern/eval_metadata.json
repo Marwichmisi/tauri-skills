@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "ipc-pattern",
+  "prompt": "Mon frontend a des centaines de dépendances imbriquées et appelle des API Tauri externes (lecture fichier, fetch HTTP). Dois-je rester en brownfield ou passer en isolation ? Donne la config tauri.conf.json du pattern choisi et le hook minimal, avec limites.",
+  "assertions": []
+}

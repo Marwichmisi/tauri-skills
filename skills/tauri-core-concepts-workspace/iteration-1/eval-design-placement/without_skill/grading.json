@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie place secrets et état global côté Core Rust, jamais en Frontend",
+      "passed": true,
+      "evidence": "placement Core correct (connaissance générale)"
+    },
+    {
+      "text": "La sortie distingue Events (fire-and-forget, lifecycle, émis des deux côtés) vs Commands (invoke style fetch, retour JSON sérialisable)",
+      "passed": true,
+      "evidence": "distinction Events/Commands correcte"
+    },
+    {
+      "text": "La sortie mentionne que l'IPC passe par le Core et peut y être filtré",
+      "passed": false,
+      "evidence": "pas de mention du routage/filtrage central au Core"
+    },
+    {
+      "text": "La réponse cite concept/process-model.md et concept/Inter-Process Communication/index.mdx commit ec113a50",
+      "passed": false,
+      "evidence": "cite URLs web v1/v2, aucun pointeur local ni commit"
+    },
+    {
+      "text": "La sortie mentionne que seul le Core a plein accès OS et que la Webview est fournie par l'OS (non embarquée)",
+      "passed": false,
+      "evidence": "évoque 'sans accès direct' mais jamais Webview fournie par l'OS / non embarquée"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 3,
+    "total": 5,
+    "pass_rate": 0.4
+  }
+}

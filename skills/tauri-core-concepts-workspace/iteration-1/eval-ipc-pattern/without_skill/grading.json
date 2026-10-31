@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie recommande le pattern isolation pour dépendances non fiables et vérification des inputs",
+      "passed": true,
+      "evidence": "isolation recommandée"
+    },
+    {
+      "text": "La sortie fournit la config use isolation avec options.dir",
+      "passed": true,
+      "evidence": "contient use isolation + dir (mais schéma v1 obsolète tauri.pattern/allowlist, drift)"
+    },
+    {
+      "text": "La sortie fournit le hook window.__TAURI_ISOLATION_HOOK__",
+      "passed": true,
+      "evidence": "hook fourni"
+    },
+    {
+      "text": "La réponse mentionne au moins une limite documentée (ES modules / iframe Windows, ou simplicité requise) et cite brownfield.md + isolation.md commit ec113a50",
+      "passed": false,
+      "evidence": "limites partiellement inventées (postMessage), aucune citation locale ni commit"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  }
+}

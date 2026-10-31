@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient le profil release avec lto true, opt-level s, panic abort, strip true",
+      "passed": true,
+      "evidence": "profil stable exact (lto, opt-level s, panic abort, strip, codegen-units 1)"
+    },
+    {
+      "text": "La sortie contient build.removeUnusedCommands à true",
+      "passed": true,
+      "evidence": "build.removeUnusedCommands true"
+    },
+    {
+      "text": "La sortie mentionne le prérequis tauri@2.4 et la mise en garde ACL dynamiques runtime",
+      "passed": true,
+      "evidence": "prérequis tauri@2.4/tauri-build@2.1/plugin@2.1/cli@2.4 + garde ACL runtime"
+    },
+    {
+      "text": "La réponse cite concept/size.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "cite size.mdx commit ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

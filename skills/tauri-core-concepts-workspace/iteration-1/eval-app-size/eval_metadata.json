@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "app-size",
+  "prompt": "Mon binaire Tauri est trop gros. Donne le profil Cargo stable qui minimise la taille et l'option tauri.conf.json qui retire les commandes inutilisées, avec prérequis de version et mise en garde.",
+  "assertions": []
+}

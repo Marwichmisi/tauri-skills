@@ -1,0 +1,11 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>tauri-core-concepts — iteration-1</title></head>
+<body><h1>tauri-core-concepts — iteration-1 (statique, après review)</h1>
+<p>with_skill: 13/13 (design 5/5, ipc 4/4, size 4/4). without_skill: design 2/5, ipc 3/4 (schéma v1 obsolète, limite postMessage inventée), size 1/4 (opt-level z au lieu de s, prérequis version faux, aucune citation).</p>
+<ul>
+<li><a href="eval-design-placement/with_skill/outputs/answer.md">eval-design-placement / with_skill</a> vs <a href="eval-design-placement/without_skill/outputs/answer.md">baseline</a> — <a href="eval-design-placement/with_skill/grading.json">grading</a></li>
+<li><a href="eval-ipc-pattern/with_skill/outputs/answer.md">eval-ipc-pattern / with_skill</a> vs <a href="eval-ipc-pattern/without_skill/outputs/answer.md">baseline</a> — <a href="eval-ipc-pattern/with_skill/grading.json">grading</a></li>
+<li><a href="eval-app-size/with_skill/outputs/answer.md">eval-app-size / with_skill</a> vs <a href="eval-app-size/without_skill/outputs/answer.md">baseline</a> — <a href="eval-app-size/with_skill/grading.json">grading</a></li>
+</ul>
+<p>Corrections post-review: tableau de routage à 4 colonnes (Script = documentaire, exemption gabarit) ; brownfield marqué forme explicite ; grading baseline size corrigé en FAIL ; attente architecture ajoutée à l'éval design (5 attentes).</p>
+<p>Traçabilité pack: <b>OK 135/135</b> (commit ec113a50). SKILL.md: ~50 lignes. Pas de `scripts/` (guidance documentaire, gabarit: scripts seulement si besoin réel).</p>
+</body></html>
