@@ -6,6 +6,7 @@ Commit figé : `ec113a50`. Source : `tauri-docs/src/content/docs` (EN canonique,
 |---|---|---|
 | hors-pack | 10 | voir docs/tracabilite.json |
 | tauri-config-cli-reference | 4 | voir docs/tracabilite.json |
+| tauri-frontend-bindings | 0 | JS généré (core + 27 guest-js) + docs.rs, voir docs/tracabilite.json |
 | tauri-core-concepts | 7 | voir docs/tracabilite.json |
 | tauri-dev-quality | 13 | voir docs/tracabilite.json |
 | tauri-distribution | 22 | voir docs/tracabilite.json |
