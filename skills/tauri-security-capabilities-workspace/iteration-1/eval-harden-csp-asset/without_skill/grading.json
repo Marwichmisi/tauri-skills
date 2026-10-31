@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient assetProtocol avec enable true et scope objet allow/deny",
+      "passed": true,
+      "evidence": "checked in eval-harden-csp-asset/without_skill: PASS"
+    },
+    {
+      "text": "La sortie contient une bloc csp avec default-src incluant asset:",
+      "passed": true,
+      "evidence": "checked in eval-harden-csp-asset/without_skill: PASS"
+    },
+    {
+      "text": "La réponse déclare la frontière vers tauri-config-cli-reference pour le schéma complet",
+      "passed": false,
+      "evidence": "checked in eval-harden-csp-asset/without_skill: FAIL"
+    },
+    {
+      "text": "La réponse cite security/csp.mdx et security/asset-protocol.mdx commit ec113a50",
+      "passed": false,
+      "evidence": "checked in eval-harden-csp-asset/without_skill: FAIL"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 2,
+    "total": 4,
+    "pass_rate": 0.5
+  }
+}

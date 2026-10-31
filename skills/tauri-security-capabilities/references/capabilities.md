@@ -1,0 +1,52 @@
+# Capabilities — extrait doc
+
+Source: `tauri-docs/src/content/docs/security/capabilities.mdx`, commit `ec113a50`, titre frontmatter `Capabilities`.
+
+> Tauri provides application and plugin developers with a capabilities system,
+> to granularly enable and constrain the core exposure to the application frontend running in the
+> system WebView.
+>
+> Capabilities define which permissions are granted or denied for which windows or webviews.
+>
+> Capabilities can affect multiple windows and webviews and these can be referenced in multiple capabilities.
+>
+> Windows and WebViews which are part of more than one capability effectively merge the security boundaries and permissions of all involved capabilities.
+>
+> Capability files are either defined as a JSON or a TOML file inside the `src-tauri/capabilities` directory.
+> All capabilities inside the `capabilities` directory are automatically enabled by default. Once capabilities are explicitly enabled in the `tauri.conf.json`, only these are used in the application build.
+
+Exemple canonique (même fichier) : voir `examples/default-capability.json`.
+
+```json title="src-tauri/capabilities/default.json"
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:path:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:window:allow-set-title"
+  ]
+}
+```
+
+Activation explicite (même fichier) : voir `examples/tauri.conf.json`.
+
+```json title="src-tauri/tauri.conf.json"
+{
+  "app": {
+    "security": {
+      "capabilities": ["my-capability", "main-capability"]
+    }
+  }
+}
+```
+
+Référence schéma complet : voir skill frère `tauri-config-cli-reference` (généré `reference/config.md`).
+Par défaut, les commandes enregistrées via `tauri::Builder::invoke_handler` sont autorisées pour toutes les fenêtres ; pour restreindre, voir `AppManifest::commands` (skill `tauri-ipc-bridge`, lien `docs.rs` uniquement).

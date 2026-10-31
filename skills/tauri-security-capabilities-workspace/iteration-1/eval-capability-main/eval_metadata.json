@@ -1,0 +1,1 @@
+{"eval_id": 1, "eval_name": "capability-main", "prompt": "Écris la capability JSON pour la fenêtre 'main' avec les defaults core (path, event, window, app, resources, menu, tray) plus core:window:allow-set-title. Le fichier doit passer scripts/check-capabilities.py sans inventer de permission.", "assertions": []}

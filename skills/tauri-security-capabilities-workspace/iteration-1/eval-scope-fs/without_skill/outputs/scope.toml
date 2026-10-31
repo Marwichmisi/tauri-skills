@@ -1,0 +1,26 @@
+# Set FS reutilisable : lecture sous $APPLOCALDATA sauf webview-data
+# Fichier suggere : src-tauri/permissions/fs-applocaldata-no-webview.toml
+# Usage dans une capability (JSON/TOML) :
+#   "permissions": ["fs-applocaldata-no-webview:applocaldata-no-webview-read"]
+# Adapte le prefixe au nom du fichier si besoin.
+#
+# Principe : allow large + deny ciblé.
+# En Tauri v2, pour le plugin fs, `deny` gagne sur `allow` :
+# meme si un chemin matche `$APPLOCALDATA/**`, il est refuse
+# s'il matche aussi une entree `deny`.
+
+[[set]]
+identifier = "applocaldata-no-webview-read"
+description = "Lecture sous $APPLOCALDATA en recursif, acces webview-data bloque (Linux/Windows). Deny prioritaire sur allow."
+
+permissions = [
+  # Liste de dossier recursive (necessaire pour parcourir $APPLOCALDATA)
+  { identifier = "fs:allow-read-recursive", allow = [{ path = "$APPLOCALDATA/**" }], deny = [{ path = "$APPLOCALDATA/webview-data/**" }, { path = "$APPLOCALDATA/**/webview-data/**" }, { path = "$APPLOCALDATA/EBWebView/**" }, { path = "$APPLOCALDATA/WebView2/**" }] },
+  # Lecture de fichier generique
+  { identifier = "fs:allow-read-file", allow = [{ path = "$APPLOCALDATA/**" }], deny = [{ path = "$APPLOCALDATA/webview-data/**" }, { path = "$APPLOCALDATA/**/webview-data/**" }, { path = "$APPLOCALDATA/EBWebView/**" }, { path = "$APPLOCALDATA/WebView2/**" }] },
+  # Lecture texte / binaire (commandes distinctes, meme scope a repeter)
+  { identifier = "fs:allow-read-text-file", allow = [{ path = "$APPLOCALDATA/**" }], deny = [{ path = "$APPLOCALDATA/webview-data/**" }, { path = "$APPLOCALDATA/**/webview-data/**" }, { path = "$APPLOCALDATA/EBWebView/**" }, { path = "$APPLOCALDATA/WebView2/**" }] },
+  { identifier = "fs:allow-read-binary-file", allow = [{ path = "$APPLOCALDATA/**" }], deny = [{ path = "$APPLOCALDATA/webview-data/**" }, { path = "$APPLOCALDATA/**/webview-data/**" }, { path = "$APPLOCALDATA/EBWebView/**" }, { path = "$APPLOCALDATA/WebView2/**" }] },
+  # Listing / stat (sinon contournement par decouverte d'arborescence)
+  { identifier = "fs:allow-read-dir", allow = [{ path = "$APPLOCALDATA/**" }], deny = [{ path = "$APPLOCALDATA/webview-data/**" }, { path = "$APPLOCALDATA/**/webview-data/**" }, { path = "$APPLOCALDATA/EBWebView/**" }, { path = "$APPLOCALDATA/WebView2/**" }] },
+]

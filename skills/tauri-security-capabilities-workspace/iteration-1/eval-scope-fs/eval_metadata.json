@@ -1,0 +1,1 @@
+{"eval_id": 2, "eval_name": "scope-fs", "prompt": "Mon app lit des fichiers sous $APPLOCALDATA mais doit bloquer l'accès aux données webview. Propose le scope TOML fs (allow applocaldata récursif + deny webview-data linux/windows) sous forme de set réutilisable, en expliquant que deny gagne sur allow.", "assertions": []}

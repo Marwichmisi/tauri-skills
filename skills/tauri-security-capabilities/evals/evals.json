@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-security-capabilities",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Écris la capability JSON pour la fenêtre 'main' avec les defaults core (path, event, window, app, resources, menu, tray) plus core:window:allow-set-title. Le fichier doit passer scripts/check-capabilities.py sans inventer de permission.",
+      "expected_output": "JSON capability valide avec identifier, windows=['main'], 8 permissions exactes de la doc, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient identifier main-capability",
+        "La sortie liste core:window:allow-set-title sans permission inventée",
+        "Le script check-capabilities.py retourne OK sur le fichier produit",
+        "La réponse cite security/capabilities.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Mon app lit des fichiers sous $APPLOCALDATA mais doit bloquer l'accès aux données webview. Propose le scope TOML fs (allow applocaldata récursif + deny webview-data linux/windows) sous forme de set réutilisable, en expliquant que deny gagne sur allow.",
+      "expected_output": "TOML avec scope-applocaldata-recursive (allow), deny-webview-data + set deny-default/scope-applocaldata-reasonable, mention deny supersedes allow",
+      "files": [],
+      "expectations": [
+        "La sortie contient un bloc [[permission.scope.allow]] avec $APPLOCALDATA/**",
+        "La sortie contient un bloc [[permission.scope.deny]] pour webview-data",
+        "La sortie mentionne que deny prend le pas sur allow",
+        "Aucune permission inventée hors vocabulaire fs documenté"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Durcis ma config : CSP minimale + assetProtocol qui expose $APPCACHE mais bloque $APPCACHE/**/secrets/**. Si c'est du ressort de tauri-config-cli-reference (schéma complet), renvoie vers lui au lieu de dupliquer.",
+      "expected_output": "Snippet tauri.conf.json avec csp + assetProtocol enable:true scope objet allow/deny, frontière config-cli rappelée",
+      "files": [],
+      "expectations": [
+        "La sortie contient assetProtocol avec enable true et scope objet allow/deny",
+        "La sortie contient un bloc csp avec default-src incluant asset:",
+        "La réponse déclare la frontière vers tauri-config-cli-reference pour le schéma complet",
+        "La réponse cite security/csp.mdx et security/asset-protocol.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

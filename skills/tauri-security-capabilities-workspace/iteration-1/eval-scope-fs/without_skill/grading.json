@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient un bloc [[permission.scope.allow]] avec $APPLOCALDATA/**",
+      "passed": true,
+      "evidence": "checked in eval-scope-fs/without_skill: PASS"
+    },
+    {
+      "text": "La sortie contient un bloc [[permission.scope.deny]] pour webview-data",
+      "passed": true,
+      "evidence": "checked in eval-scope-fs/without_skill: PASS"
+    },
+    {
+      "text": "La sortie mentionne que deny prend le pas sur allow",
+      "passed": true,
+      "evidence": "checked in eval-scope-fs/without_skill: PASS"
+    },
+    {
+      "text": "Aucune permission inventée hors vocabulaire fs documenté",
+      "passed": false,
+      "evidence": "checked in eval-scope-fs/without_skill: FAIL"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  }
+}

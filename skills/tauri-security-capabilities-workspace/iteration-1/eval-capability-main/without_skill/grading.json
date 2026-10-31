@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient identifier main-capability",
+      "passed": true,
+      "evidence": "checked in eval-capability-main/without_skill: PASS"
+    },
+    {
+      "text": "La sortie liste core:window:allow-set-title sans permission inventée",
+      "passed": true,
+      "evidence": "checked in eval-capability-main/without_skill: PASS"
+    },
+    {
+      "text": "Le script check-capabilities.py retourne OK sur le fichier produit",
+      "passed": false,
+      "evidence": "checked in eval-capability-main/without_skill: FAIL"
+    },
+    {
+      "text": "La réponse cite security/capabilities.mdx commit ec113a50 comme source",
+      "passed": false,
+      "evidence": "checked in eval-capability-main/without_skill: FAIL"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 2,
+    "total": 4,
+    "pass_rate": 0.5
+  }
+}

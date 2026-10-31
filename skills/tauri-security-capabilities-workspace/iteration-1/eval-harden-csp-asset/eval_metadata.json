@@ -1,0 +1,1 @@
+{"eval_id": 3, "eval_name": "harden-csp-asset", "prompt": "Durcis ma config : CSP minimale + assetProtocol qui expose $APPCACHE mais bloque $APPCACHE/**/secrets/**. Si c'est du ressort de tauri-config-cli-reference (schéma complet), renvoie vers lui au lieu de dupliquer.", "assertions": []}
