@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-ipc-bridge",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Expose une commande Rust `greet(name: String) -> String` qui retourne `Hello, {name}!`, enregistre-la via generate_handler, et appelle-la depuis le frontend avec invoke + args camelCase. Le tout doit passer scripts/check-ipc-bridge.py sans pub dans lib.rs ni nom invente hors paire.",
+      "expected_output": "Paire Rust lib.rs (tauri::command greet + generate_handler) + frontend invoke('greet', {name}) apparies, check OK, sources citees",
+      "files": [],
+      "expectations": [
+        "La sortie contient #[tauri::command] + fn greet + generate_handler![greet]",
+        "La sortie contient invoke('greet', { name }) apparie a la commande Rust",
+        "Le script check-ipc-bridge.py --rust --frontend retourne OK sur la paire produite",
+        "La reponse cite develop/calling-rust.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Notifie une progression download Rust->frontend (events download-started/download-progress) + ecoute frontend avec cleanup unlisten/once, et explique quand passer aux Channels + eval. Doit passer le check event et renvoyer les scopes vers la securite.",
+      "expected_output": "Rust emit download-* + frontend listen meme noms + unlisten/once + regle channels gros volumes, check OK, frontiere scopes rappelee",
+      "files": [],
+      "expectations": [
+        "La sortie contient app.emit download-started/download-progress cote Rust",
+        "La sortie contient listen('download-started') + unlisten/once cote frontend",
+        "La sortie explique que les Channels sont ordonnes/rapides pour gros volumes vs events JSON",
+        "La reponse cite develop/calling-frontend.mdx + frontend-listen.mdx commit ec113a50 et renvoie les scopes vers tauri-security-capabilities"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Embarque un sidecar `binaries/my-sidecar` (+ suffixe -$TARGET_TRIPLE via rename) + une ressource `lang/de.json` resolue cote Rust (PathResolver) et JS (resolveResource). Donne tauri.conf.json (externalBin + resources), le rappel capability shell:allow-execute renvoye vers la securite, et le check config OK.",
+      "expected_output": "tauri.conf externalBin + resources + rename triple + resolve Rust/JS + frontiere shell, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient bundle.externalBin [binaries/my-sidecar] + rename -$TARGET_TRIPLE (rustc --print host-tuple)",
+        "La sortie contient bundle.resources lang/* + resolve Rust PathResolver + resolveResource JS",
+        "La sortie declare la frontiere shell:allow-execute vers tauri-security-capabilities sans inventer de permission",
+        "Le script check-ipc-bridge.py --config retourne OK et la reponse cite develop/sidecar.mdx + resources.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

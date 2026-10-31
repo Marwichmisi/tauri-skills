@@ -1,0 +1,10 @@
+{
+  "bundle": {
+    "externalBin": [
+      "binaries/my-sidecar"
+    ],
+    "resources": [
+      "lang/*"
+    ]
+  }
+}

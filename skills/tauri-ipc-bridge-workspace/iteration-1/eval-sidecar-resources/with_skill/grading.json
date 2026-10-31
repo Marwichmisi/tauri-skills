@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient bundle.externalBin [binaries/my-sidecar] + rename -$TARGET_TRIPLE (rustc --print host-tuple)",
+      "passed": true,
+      "evidence": "tauri.conf.json: externalBin [binaries/my-sidecar] ; rename.js: rustc --print host-tuple + fs.renameSync triple"
+    },
+    {
+      "text": "La sortie contient bundle.resources lang/* + resolve Rust PathResolver + resolveResource JS",
+      "passed": true,
+      "evidence": "tauri.conf.json: resources [lang/*] ; answer.md: path().resolve lang/de.json + resolveResource"
+    },
+    {
+      "text": "La sortie declare la frontiere shell:allow-execute vers tauri-security-capabilities sans inventer de permission",
+      "passed": true,
+      "evidence": "answer.md: shell:allow-execute doctrine detenue par tauri-security-capabilities, jamais dupliquee"
+    },
+    {
+      "text": "Le script check-ipc-bridge.py --config retourne OK et la reponse cite develop/sidecar.mdx + resources.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "check --config OK (externalBin + resources 1 entree) ; answer.md cite sidecar.mdx + sidecar-nodejs.mdx + resources.mdx ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

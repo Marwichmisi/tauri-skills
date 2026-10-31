@@ -1,0 +1,1 @@
+{"eval_id": 3, "eval_name": "sidecar-resources", "prompt": "Embarque un sidecar binaries/my-sidecar (+ triple via rename) + ressource lang/de.json resolue Rust/JS. Donne tauri.conf.json et le rappel shell renvoye vers la securite.", "assertions": []}

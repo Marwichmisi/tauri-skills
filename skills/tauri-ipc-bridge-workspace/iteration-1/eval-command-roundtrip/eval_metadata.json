@@ -1,0 +1,1 @@
+{"eval_id": 1, "eval_name": "command-roundtrip", "prompt": "Expose une commande Rust greet(name: String) -> String, enregistre-la via generate_handler, et appelle-la depuis le frontend avec invoke + args camelCase. Doit passer scripts/check-ipc-bridge.py.", "assertions": []}

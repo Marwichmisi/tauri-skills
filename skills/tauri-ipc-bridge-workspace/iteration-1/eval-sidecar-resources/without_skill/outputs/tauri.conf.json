@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "externalBin": [
+      "binaries/my-sidecar-x86_64-unknown-linux-gnu"
+    ]
+  }
+}

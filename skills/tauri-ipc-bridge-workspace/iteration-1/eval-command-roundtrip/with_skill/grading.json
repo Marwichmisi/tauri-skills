@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "La sortie contient #[tauri::command] + fn greet + generate_handler![greet]", "passed": true, "evidence": "lib.rs: #[tauri::command] fn greet(name: String) -> String + invoke_handler(generate_handler![greet])"},
+    {"text": "La sortie contient invoke('greet', { name }) apparie a la commande Rust", "passed": true, "evidence": "app.js: invoke('greet', { name: 'Tauri' }) ; check: frontend invokes ['greet'] apparie"},
+    {"text": "Le script check-ipc-bridge.py --rust --frontend retourne OK sur la paire produite", "passed": true, "evidence": "check OK lib.rs + app.js : rust 1 command(s) ['greet'], exit 0"},
+    {"text": "La reponse cite develop/calling-rust.mdx commit ec113a50 comme source", "passed": true, "evidence": "answer.md cite develop/calling-rust.mdx commit ec113a50 via references/commands.md"}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}
+}

@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "La sortie contient app.emit download-started/download-progress cote Rust", "passed": true, "evidence": "events.rs: emit download-started/download-progress/download-finished + generate_handler![download]"},
+    {"text": "La sortie contient listen('download-started') + unlisten/once cote frontend", "passed": true, "evidence": "listen.js: await listen download-started/download-progress + once download-finished + unlisten cleanup"},
+    {"text": "La sortie explique que les Channels sont ordonnes/rapides pour gros volumes vs events JSON", "passed": true, "evidence": "answer.md : Channels rapides/ordonnes/streaming vs events JSON petits messages, voir references/events.md"},
+    {"text": "La reponse cite develop/calling-frontend.mdx + frontend-listen.mdx commit ec113a50 et renvoie les scopes vers tauri-security-capabilities", "passed": true, "evidence": "answer.md cite calling-frontend.mdx + frontend-listen.mdx ec113a50 + renvoi scopes vers tauri-security-capabilities"}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}
+}

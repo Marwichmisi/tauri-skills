@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "La sortie contient #[tauri::command] + fn greet + generate_handler![greet]", "passed": false, "evidence": "lib.rs a #[tauri::command] + greet mais pub fn interdit + aucun invoke_handler/generate_handler (check: missing handler, pub forbidden)"},
+    {"text": "La sortie contient invoke('greet', { name }) apparie a la commande Rust", "passed": false, "evidence": "app.js: invoke('Greet', { user_name }) — casse + cle differentes, check: no matching Rust command"},
+    {"text": "Le script check-ipc-bridge.py --rust --frontend retourne OK sur la paire produite", "passed": false, "evidence": "check FAIL (missing handler, pub, no matching command, no complete exchange), exit 1"},
+    {"text": "La reponse cite develop/calling-rust.mdx commit ec113a50 comme source", "passed": false, "evidence": "answer.md baseline : aucune source citee"}
+  ],
+  "summary": {"passed": 0, "failed": 4, "total": 4, "pass_rate": 0.0}
+}

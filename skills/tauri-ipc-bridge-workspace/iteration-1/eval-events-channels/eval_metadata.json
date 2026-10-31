@@ -1,0 +1,1 @@
+{"eval_id": 2, "eval_name": "events-channels", "prompt": "Notifie une progression download Rust->frontend (events) + ecoute frontend avec cleanup, et explique quand passer aux Channels + eval. Doit passer le check event.", "assertions": []}

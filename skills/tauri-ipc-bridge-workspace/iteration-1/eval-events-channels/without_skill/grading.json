@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "La sortie contient app.emit download-started/download-progress cote Rust", "passed": false, "evidence": "events.rs baseline : emit download-done uniquement, sans #[tauri::command] ; aucun emit download-started/progress"},
+    {"text": "La sortie contient listen('download-started') + unlisten/once cote frontend", "passed": false, "evidence": "listen.js : unlisten() synchrone avant resolution (pige doc), aucun once ; check: no complete exchange"},
+    {"text": "La sortie explique que les Channels sont ordonnes/rapides pour gros volumes vs events JSON", "passed": false, "evidence": "answer.md baseline : aucune mention Channels/eval"},
+    {"text": "La reponse cite develop/calling-frontend.mdx + frontend-listen.mdx commit ec113a50 et renvoie les scopes vers tauri-security-capabilities", "passed": false, "evidence": "aucune source, aucun renvoi scopes"}
+  ],
+  "summary": {"passed": 0, "failed": 4, "total": 4, "pass_rate": 0.0}
+}
