@@ -1,0 +1,1 @@
+without_skill eval-opener-vs-shell : fiche shell devinée, permission approximative, renvoi opener manqué.

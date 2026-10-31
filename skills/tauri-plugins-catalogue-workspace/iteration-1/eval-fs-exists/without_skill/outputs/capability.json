@@ -1,0 +1,10 @@
+{
+  "identifier": "main-capability",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "fs:default",
+    "fs:allow-read"
+  ]
+}

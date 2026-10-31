@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "opener-vs-shell",
+  "prompt": "Je veux ouvrir un PDF externe dans l'app par défaut depuis le frontend (openUrl/openPath). Hésite entre shell et opener : route vers la bonne fiche en une étape, explique pourquoi shell.open est exclu (renvoi doc), donne le snippet et la capability sans inventer de permission.",
+  "assertions": []
+}

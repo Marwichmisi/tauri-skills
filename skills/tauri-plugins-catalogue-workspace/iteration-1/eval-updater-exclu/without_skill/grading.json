@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie déclare que plugin/updater.mdx est hors catalogue et renvoie vers tauri-distribution",
+      "passed": false,
+      "evidence": "aucun renvoi distribution — checked in eval-updater-exclu/without_skill: FAIL"
+    },
+    {
+      "text": "La sortie rappelle que la doctrine permissions vit dans tauri-security-capabilities sans dupliquer",
+      "passed": false,
+      "evidence": "doctrine non rappelée — checked in eval-updater-exclu/without_skill: FAIL"
+    },
+    {
+      "text": "Le script check-catalogue.py --plugin updater échoue avec mention distribution",
+      "passed": false,
+      "evidence": "baseline ne prouve pas le rejet mécanique (check --plugin updater rejette, non cité) — checked in eval-updater-exclu/without_skill: FAIL"
+    },
+    {
+      "text": "Aucune permission updater inventée dans le catalogue",
+      "passed": false,
+      "evidence": "updater:allow-update inventée — checked in eval-updater-exclu/without_skill: FAIL"
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 4,
+    "total": 4,
+    "pass_rate": 0.0
+  }
+}

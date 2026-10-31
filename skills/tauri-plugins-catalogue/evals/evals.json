@@ -1,0 +1,42 @@
+{
+  "skill_name": "tauri-plugins-catalogue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Mon app doit vérifier si $APPDATA/avatar.png existe côté frontend (BaseDirectory.AppData + exists). Trouve la bonne fiche en une étape de routage, donne le setup tauri add + le snippet JS fidèle doc + la capability JSON avec les permissions exactes de la fiche (sans inventer). Valide avec scripts/check-catalogue.py.",
+      "expected_output": "Fiche file-system routée, setup npm run tauri add fs, snippet exists/BaseDirectory, capability fs:default + fs:allow-exists, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie route vers references/file-system.md en une étape (pas de devinette multi-fiches)",
+        "La sortie contient npm run tauri add fs et l'import @tauri-apps/plugin-fs avec exists/BaseDirectory",
+        "La sortie liste fs:default et fs:allow-exists sans permission inventée",
+        "Le script check-catalogue.py --plugin file-system retourne OK sur les fichiers produits",
+        "La réponse cite plugin/file-system.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Je veux ouvrir un PDF externe dans l'app par défaut depuis le frontend (openUrl/openPath). Hésite entre shell et opener : route vers la bonne fiche en une étape, explique pourquoi shell.open est exclu (renvoi doc), donne le snippet et la capability sans inventer de permission.",
+      "expected_output": "Fiche opener routée, renvoi shell->opener documenté, snippet openUrl/openPath, capability opener:allow-open-url, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie route vers references/opener.md (pas shell) avec le renvoi doc shell.open -> opener",
+        "La sortie contient l'import @tauri-apps/plugin-opener avec openUrl/openPath",
+        "La sortie liste opener:allow-open-url (ou open-path) sans permission inventée",
+        "Le script check-catalogue.py --plugin opener retourne OK sur les fichiers produits"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Configure l'auto-update de mon app (endpoints, pubkey) et donne-moi la permission updater à mettre en capability. Si c'est hors catalogue, renvoie vers le bon skill au lieu d'inventer, et rappelle où vit la doctrine permissions.",
+      "expected_output": "Refus catalogue + renvoi tauri-distribution (updater) et tauri-security-capabilities (doctrine), check rejette updater",
+      "files": [],
+      "expectations": [
+        "La sortie déclare que plugin/updater.mdx est hors catalogue et renvoie vers tauri-distribution",
+        "La sortie rappelle que la doctrine permissions vit dans tauri-security-capabilities sans dupliquer",
+        "Le script check-catalogue.py --plugin updater échoue avec mention distribution",
+        "Aucune permission updater inventée dans le catalogue"
+      ]
+    }
+  ]
+}

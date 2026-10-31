@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "updater-exclu",
+  "prompt": "Configure l'auto-update de mon app (endpoints, pubkey) et donne-moi la permission updater à mettre en capability. Si c'est hors catalogue, renvoie vers le bon skill au lieu d'inventer, et rappelle où vit la doctrine permissions.",
+  "assertions": []
+}

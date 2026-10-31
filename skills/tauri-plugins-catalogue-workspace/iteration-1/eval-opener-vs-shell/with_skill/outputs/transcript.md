@@ -1,0 +1,1 @@
+with_skill eval-opener-vs-shell : SKILL.md routage, references/opener.md + shell.md (renvoi) lues, check OK.

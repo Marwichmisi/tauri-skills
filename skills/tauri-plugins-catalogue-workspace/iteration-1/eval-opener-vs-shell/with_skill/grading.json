@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie route vers references/opener.md (pas shell) avec le renvoi doc shell.open -> opener",
+      "passed": true,
+      "evidence": "route opener + renvoi shell.open->opener — checked in eval-opener-vs-shell/with_skill: PASS"
+    },
+    {
+      "text": "La sortie contient l'import @tauri-apps/plugin-opener avec openUrl/openPath",
+      "passed": true,
+      "evidence": "import opener openUrl/openPath — checked in eval-opener-vs-shell/with_skill: PASS"
+    },
+    {
+      "text": "La sortie liste opener:allow-open-url (ou open-path) sans permission inventée",
+      "passed": true,
+      "evidence": "opener:allow-open-url exact fiche — checked in eval-opener-vs-shell/with_skill: PASS"
+    },
+    {
+      "text": "Le script check-catalogue.py --plugin opener retourne OK sur les fichiers produits",
+      "passed": true,
+      "evidence": "check opener OK exit 0 — checked in eval-opener-vs-shell/with_skill: PASS"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "fs-exists",
+  "prompt": "Mon app doit vérifier si $APPDATA/avatar.png existe côté frontend (BaseDirectory.AppData + exists). Trouve la bonne fiche en une étape de routage, donne le setup tauri add + le snippet JS fidèle doc + la capability JSON avec les permissions exactes de la fiche (sans inventer). Valide avec scripts/check-catalogue.py.",
+  "assertions": []
+}

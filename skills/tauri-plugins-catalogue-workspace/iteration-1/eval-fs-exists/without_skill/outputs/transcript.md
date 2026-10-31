@@ -1,0 +1,1 @@
+without_skill eval-fs-exists : sans SKILL.md, devinette fiche + permission approximative, pas de pointeur source.

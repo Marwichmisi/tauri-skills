@@ -1,0 +1,1 @@
+with_skill eval-fs-exists : SKILL.md lu, references/file-system.md lue, examples/fs.js + capability-fs.json appliqués, check-catalogue.py exécuté (OK).

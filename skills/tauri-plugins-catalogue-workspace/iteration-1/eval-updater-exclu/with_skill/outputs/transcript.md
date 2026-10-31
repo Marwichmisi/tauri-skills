@@ -1,0 +1,1 @@
+with_skill eval-updater-exclu : SKILL.md Frontières + overview.md, check --plugin updater exécuté (rejet attendu).

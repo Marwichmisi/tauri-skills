@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie route vers references/file-system.md en une étape (pas de devinette multi-fiches)",
+      "passed": false,
+      "evidence": "pas de routage explicite vers references/file-system.md — checked in eval-fs-exists/without_skill: FAIL"
+    },
+    {
+      "text": "La sortie contient npm run tauri add fs et l'import @tauri-apps/plugin-fs avec exists/BaseDirectory",
+      "passed": false,
+      "evidence": "setup manquant, readFile au lieu de exists/BaseDirectory — checked in eval-fs-exists/without_skill: FAIL"
+    },
+    {
+      "text": "La sortie liste fs:default et fs:allow-exists sans permission inventée",
+      "passed": false,
+      "evidence": "fs:allow-read inventée (non citée dans la fiche ; fiche : fs:allow-exists) — checked in eval-fs-exists/without_skill: FAIL"
+    },
+    {
+      "text": "Le script check-catalogue.py --plugin file-system retourne OK sur les fichiers produits",
+      "passed": true,
+      "evidence": "check exit 0 (format+préfixe seuls, invention exacte vérifiée à la fiche) — checked in eval-fs-exists/without_skill: PASS"
+    },
+    {
+      "text": "La réponse cite plugin/file-system.mdx commit ec113a50 comme source",
+      "passed": false,
+      "evidence": "aucun pointeur source fichier+commit — checked in eval-fs-exists/without_skill: FAIL"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 4,
+    "total": 5,
+    "pass_rate": 0.2
+  }
+}
