@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-nextjs-export",
+  "prompt": "Configure mon frontend Next.js existant pour Tauri v2 (pnpm). Donne la tauri.conf.json et la next.config.mjs minimales en mode statique uniquement (pas de SSR). Doit passer scripts/check-start.py --frontend nextjs.",
+  "assertions": [
+    "La sortie contient frontendDist ../out et devUrl http://localhost:3000",
+    "La sortie contient output export et images unoptimized true",
+    "La sortie ne propose aucune solution serveur (pas de SSR)",
+    "Le script check-start.py --frontend nextjs retourne OK sur la conf produite",
+    "La réponse cite start/frontend/nextjs.mdx commit ec113a50"
+  ]
+}

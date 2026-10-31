@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-vite-spa",
+  "prompt": "Démarre un projet Tauri v2 avec Vite + React (pnpm). Donne la tauri.conf.json (build), le rappel vite.config (strictPort, ignore src-tauri, TAURI_DEV_HOST) et l'arborescence src-tauri/ attendue. Le tout doit passer scripts/check-start.py --frontend vite sans valeur inventée.",
+  "assertions": [
+    "La sortie contient frontendDist ../dist et devUrl http://localhost:5173",
+    "La sortie contient strictPort true et ignore src-tauri et TAURI_DEV_HOST",
+    "La sortie liste src-tauri/tauri.conf.json, Cargo.toml, build.rs, src/main.rs, src/lib.rs",
+    "Le script check-start.py --frontend vite retourne OK sur la conf produite",
+    "La réponse cite start/frontend/vite.mdx et start/project-structure.mdx commit ec113a50"
+  ]
+}

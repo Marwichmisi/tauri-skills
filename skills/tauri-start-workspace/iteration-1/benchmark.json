@@ -1,0 +1,327 @@
+{
+  "metadata": {
+    "skill_name": "tauri-start",
+    "skill_path": "skills/tauri-start",
+    "executor_model": "opencode agent (with_skill vs baseline, 3 evals x2)",
+    "analyzer_model": "deterministic grading script (grep + check-start.py)",
+    "timestamp": "2026-10-31T16:07:02Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../out et devUrl http://localhost:3000",
+          "passed": true,
+          "evidence": "../out+3000 présents"
+        },
+        {
+          "text": "La sortie contient output export et images unoptimized true",
+          "passed": true,
+          "evidence": "export+unoptimized présents"
+        },
+        {
+          "text": "La sortie ne propose aucune solution serveur (pas de SSR)",
+          "passed": true,
+          "evidence": "statique sans SSR proposé"
+        },
+        {
+          "text": "Le script check-start.py --frontend nextjs retourne OK sur la conf produite",
+          "passed": true,
+          "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-nextjs-export/with_skill/outputs/tauri.conf.json: frontend=nextjs, frontendDist=../out, devUrl=http://localhost:3000"
+        },
+        {
+          "text": "La réponse cite start/frontend/nextjs.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "source citée"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../build et devUrl http://localhost:5173",
+          "passed": true,
+          "evidence": "../build+5173 présents"
+        },
+        {
+          "text": "La sortie contient adapter-static avec fallback index.html",
+          "passed": true,
+          "evidence": "adapter+fallback présents"
+        },
+        {
+          "text": "La sortie contient ssr false dans +layout.ts",
+          "passed": true,
+          "evidence": "ssr false présent"
+        },
+        {
+          "text": "Le script check-start.py --frontend sveltekit retourne OK sur la conf produite",
+          "passed": true,
+          "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-sveltekit-spa/with_skill/outputs/tauri.conf.json: frontend=sveltekit, frontendDist=../build, devUrl=http://localhost:5173"
+        },
+        {
+          "text": "La réponse cite start/frontend/sveltekit.mdx commit ec113a50 et déclare la frontière vers tauri-config-cli-reference pour le schéma complet",
+          "passed": true,
+          "evidence": "source+frontière présentes"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../dist et devUrl http://localhost:5173",
+          "passed": true,
+          "evidence": "answer contient ../dist + 5173"
+        },
+        {
+          "text": "La sortie contient strictPort true et ignore src-tauri et TAURI_DEV_HOST",
+          "passed": true,
+          "evidence": "strictPort+ignore+HOST présents"
+        },
+        {
+          "text": "La sortie liste src-tauri/tauri.conf.json, Cargo.toml, build.rs, src/main.rs, src/lib.rs",
+          "passed": true,
+          "evidence": "arbre complet présent"
+        },
+        {
+          "text": "Le script check-start.py --frontend vite retourne OK sur la conf produite",
+          "passed": true,
+          "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-vite-spa/with_skill/outputs/tauri.conf.json: frontend=vite, frontendDist=../dist, devUrl=http://localhost:5173"
+        },
+        {
+          "text": "La réponse cite start/frontend/vite.mdx et start/project-structure.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "sources citées"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../out et devUrl http://localhost:3000",
+          "passed": true,
+          "evidence": "../out+3000 présents"
+        },
+        {
+          "text": "La sortie contient output export et images unoptimized true",
+          "passed": true,
+          "evidence": "export+unoptimized présents"
+        },
+        {
+          "text": "La sortie ne propose aucune solution serveur (pas de SSR)",
+          "passed": true,
+          "evidence": "statique sans SSR proposé"
+        },
+        {
+          "text": "Le script check-start.py --frontend nextjs retourne OK sur la conf produite",
+          "passed": true,
+          "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-nextjs-export/without_skill/outputs/tauri.conf.json: frontend=nextjs, frontendDist=../out, devUrl=http://localhost:3000"
+        },
+        {
+          "text": "La réponse cite start/frontend/nextjs.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "source manquante"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../build et devUrl http://localhost:5173",
+          "passed": true,
+          "evidence": "../build+5173 présents"
+        },
+        {
+          "text": "La sortie contient adapter-static avec fallback index.html",
+          "passed": true,
+          "evidence": "adapter+fallback présents"
+        },
+        {
+          "text": "La sortie contient ssr false dans +layout.ts",
+          "passed": true,
+          "evidence": "ssr false présent"
+        },
+        {
+          "text": "Le script check-start.py --frontend sveltekit retourne OK sur la conf produite",
+          "passed": true,
+          "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-sveltekit-spa/without_skill/outputs/tauri.conf.json: frontend=sveltekit, frontendDist=../build, devUrl=http://localhost:5173"
+        },
+        {
+          "text": "La réponse cite start/frontend/sveltekit.mdx commit ec113a50 et déclare la frontière vers tauri-config-cli-reference pour le schéma complet",
+          "passed": false,
+          "evidence": "source/frontière manquantes (sveltekit=False, ec=False, front=False)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.4,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "time_seconds": 0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient frontendDist ../dist et devUrl http://localhost:5173",
+          "passed": false,
+          "evidence": "manque ../dist/5173"
+        },
+        {
+          "text": "La sortie contient strictPort true et ignore src-tauri et TAURI_DEV_HOST",
+          "passed": true,
+          "evidence": "strictPort+ignore+HOST présents"
+        },
+        {
+          "text": "La sortie liste src-tauri/tauri.conf.json, Cargo.toml, build.rs, src/main.rs, src/lib.rs",
+          "passed": true,
+          "evidence": "arbre complet présent"
+        },
+        {
+          "text": "Le script check-start.py --frontend vite retourne OK sur la conf produite",
+          "passed": false,
+          "evidence": "FAIL skills/tauri-start-workspace/iteration-1/eval-vite-spa/without_skill/outputs/tauri.conf.json"
+        },
+        {
+          "text": "La réponse cite start/frontend/vite.mdx et start/project-structure.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "sources manquantes"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6667,
+        "stddev": 0.2309,
+        "min": 0.4,
+        "max": 0.8
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.33",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "with_skill 15/15 (100%), without_skill 10/15 (67%), delta +0.33 : le skill apporte sources citées + devUrl exact (vite 5173 vs 1420 inventé en baseline).",
+    "Couverture iteration-1 : vite/nextjs/sveltekit démontrés ; nuxt/qwik/leptos/trunk couverts par EXPECTED + tests script, à démontrer en iteration-2 si besoin.",
+    "check-start.py ne valide que le bloc build tauri.conf.json ; output export / ssr false / adapter static vérifiés par expectations réponse (voir references/frontend-meta.md)."
+  ]
+}

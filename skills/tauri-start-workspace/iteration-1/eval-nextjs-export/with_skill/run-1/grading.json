@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient frontendDist ../out et devUrl http://localhost:3000",
+      "passed": true,
+      "evidence": "../out+3000 présents"
+    },
+    {
+      "text": "La sortie contient output export et images unoptimized true",
+      "passed": true,
+      "evidence": "export+unoptimized présents"
+    },
+    {
+      "text": "La sortie ne propose aucune solution serveur (pas de SSR)",
+      "passed": true,
+      "evidence": "statique sans SSR proposé"
+    },
+    {
+      "text": "Le script check-start.py --frontend nextjs retourne OK sur la conf produite",
+      "passed": true,
+      "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-nextjs-export/with_skill/outputs/tauri.conf.json: frontend=nextjs, frontendDist=../out, devUrl=http://localhost:3000"
+    },
+    {
+      "text": "La réponse cite start/frontend/nextjs.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "source citée"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

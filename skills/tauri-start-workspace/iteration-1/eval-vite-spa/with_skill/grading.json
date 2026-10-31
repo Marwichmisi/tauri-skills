@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient frontendDist ../dist et devUrl http://localhost:5173",
+      "passed": true,
+      "evidence": "answer contient ../dist + 5173"
+    },
+    {
+      "text": "La sortie contient strictPort true et ignore src-tauri et TAURI_DEV_HOST",
+      "passed": true,
+      "evidence": "strictPort+ignore+HOST présents"
+    },
+    {
+      "text": "La sortie liste src-tauri/tauri.conf.json, Cargo.toml, build.rs, src/main.rs, src/lib.rs",
+      "passed": true,
+      "evidence": "arbre complet présent"
+    },
+    {
+      "text": "Le script check-start.py --frontend vite retourne OK sur la conf produite",
+      "passed": true,
+      "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-vite-spa/with_skill/outputs/tauri.conf.json: frontend=vite, frontendDist=../dist, devUrl=http://localhost:5173"
+    },
+    {
+      "text": "La réponse cite start/frontend/vite.mdx et start/project-structure.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "sources citées"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

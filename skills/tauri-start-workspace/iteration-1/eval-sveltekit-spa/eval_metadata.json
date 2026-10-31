@@ -1,0 +1,12 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-sveltekit-spa",
+  "prompt": "Configure SvelteKit en SPA sans prerender pour Tauri v2 (pnpm) + vérifie la structure. Donne tauri.conf.json (../build), l'install adapter-static, svelte.config et +layout.ts (ssr false), et la commande de check structure. Doit passer check-start --frontend sveltekit.",
+  "assertions": [
+    "La sortie contient frontendDist ../build et devUrl http://localhost:5173",
+    "La sortie contient adapter-static avec fallback index.html",
+    "La sortie contient ssr false dans +layout.ts",
+    "Le script check-start.py --frontend sveltekit retourne OK sur la conf produite",
+    "La réponse cite start/frontend/sveltekit.mdx commit ec113a50 et déclare la frontière vers tauri-config-cli-reference pour le schéma complet"
+  ]
+}

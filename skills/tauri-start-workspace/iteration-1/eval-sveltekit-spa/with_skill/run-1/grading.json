@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient frontendDist ../build et devUrl http://localhost:5173",
+      "passed": true,
+      "evidence": "../build+5173 présents"
+    },
+    {
+      "text": "La sortie contient adapter-static avec fallback index.html",
+      "passed": true,
+      "evidence": "adapter+fallback présents"
+    },
+    {
+      "text": "La sortie contient ssr false dans +layout.ts",
+      "passed": true,
+      "evidence": "ssr false présent"
+    },
+    {
+      "text": "Le script check-start.py --frontend sveltekit retourne OK sur la conf produite",
+      "passed": true,
+      "evidence": "OK skills/tauri-start-workspace/iteration-1/eval-sveltekit-spa/with_skill/outputs/tauri.conf.json: frontend=sveltekit, frontendDist=../build, devUrl=http://localhost:5173"
+    },
+    {
+      "text": "La réponse cite start/frontend/sveltekit.mdx commit ec113a50 et déclare la frontière vers tauri-config-cli-reference pour le schéma complet",
+      "passed": true,
+      "evidence": "source+frontière présentes"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}
