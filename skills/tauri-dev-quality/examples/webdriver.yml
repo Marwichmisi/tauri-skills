@@ -1,0 +1,60 @@
+# Tiré de develop/Tests/WebDriver/ci.md (titre `Continuous Integration`).
+# Hypothèses doc : app en `src-tauri/`, runner WebdriverIO en `e2e-tests/`
+# lancé par `yarn test`. Tests Linux via faux display (xvfb) ; Windows direct.
+# macOS : pas de tauri-driver natif — passer par la route service embarquée
+# (voir references/webdriver.md), jamais du tauri-driver manuel sur macOS.
+on: [push]
+name: WebDriver
+jobs:
+  test:
+    name: WebDriverIO Test Runner
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tauri dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update &&
+          sudo apt-get install -y \
+          libwebkit2gtk-4.1-dev \
+          libayatana-appindicator3-dev \
+          webkit2gtk-driver \
+          xvfb
+      - name: install msdgedriver (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          cargo install --git https://github.com/chippers/msedgedriver-tool
+          & "$HOME/.cargo/bin/msedgedriver-tool.exe"
+          $PWD.Path >> $env:GITHUB_PATH
+      - name: Setup rust-toolchain stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Cargo test
+        run: cargo test
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'yarn'
+      - name: Yarn install
+        run: yarn install --frozen-lockfile
+      - name: Yarn install
+        run: yarn install --frozen-lockfile
+        working-directory: e2e-tests
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+      - name: WebdriverIO (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        run: xvfb-run yarn test
+        working-directory: e2e-tests
+      - name: WebdriverIO (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: yarn test
+        working-directory: e2e-tests

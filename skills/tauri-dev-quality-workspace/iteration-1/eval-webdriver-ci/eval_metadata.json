@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-webdriver-ci",
+  "prompt": "Mets en place les tests E2E WebDriver d'une app Tauri v2 (binaire src-tauri/target/release/my-tauri-app) : config service embarquée (tauri + appBinaryPath + embedded) + variante manuelle Windows/Linux (tauri-driver spawn, tauri:options application, 127.0.0.1:4444) + CI (tauri-driver, webkit2gtk-driver/xvfb, msedgedriver-tool, xvfb-run). Doit passer scripts/check-dev-quality.py --wdio et --ci. Déclarer que le manuel ne couvre pas macOS.",
+  "assertions": [
+    "La sortie contient appBinaryPath et driverProvider embedded pour la route service",
+    "La sortie contient tauri-driver + tauri:options application pour la route manuelle",
+    "Les scripts check-dev-quality.py --wdio et --ci retournent OK",
+    "La réponse déclare la frontière manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"
+  ]
+}

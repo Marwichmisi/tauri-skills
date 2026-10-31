@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-vscode-debug",
+  "prompt": "Mets en place le debug VS Code d'une app Tauri v2 (pnpm, binaire src-tauri/target/debug/mon-app) : launch.json dev (lldb, manifest-path src-tauri/Cargo.toml, --no-default-features, preLaunchTask ui:dev) + prod (--release, ui:build) + tasks.json (ui:dev background yarn dev, ui:build yarn build). Le tout doit passer scripts/check-dev-quality.py --vscode sans valeur inventée.",
+  "assertions": [
+    "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml",
+    "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build",
+    "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit",
+    "La réponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"
+  ]
+}

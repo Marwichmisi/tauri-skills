@@ -1,0 +1,68 @@
+name: WebDriver E2E (Tauri v2)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      # tauri-driver est le pont WebDriver <-> WRY/WebView.
+      # Version épinglée à celle de tauri-cli du projet.
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+
+      # ---- Linux uniquement : WebKit + Xvfb ----
+      - name: Install WebKitWebDriver + Xvfb (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webkit2gtk-driver xvfb
+
+      # ---- Windows uniquement : EdgeDriver ----
+      # tauri-driver délègue à Edge (WebView2) sur Windows.
+      - name: Install msedgedriver-tool (Windows)
+        if: runner.os == 'Windows'
+        run: cargo install msedgedriver-tool --locked
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Build Tauri app (release)
+        run: npx tauri build
+        # produit src-tauri/target/release/my-tauri-app(.exe)
+
+      # Variante service embarqué : tauri-driver géré par WDIO.
+      - name: Run E2E (embedded service, Linux under Xvfb)
+        if: runner.os == 'Linux'
+        run: xvfb-run npm run test:e2e -- --config wdio-service.conf.js
+
+      - name: Run E2E (embedded service, Windows)
+        if: runner.os == 'Windows'
+        run: npm run test:e2e -- --config wdio-service.conf.js
+
+      # Variante manuelle (spawn tauri-driver, 127.0.0.1:4444) :
+      # décommenter pour tester la config manuelle en CI :
+      # - name: Run E2E (manual driver, Linux under Xvfb)
+      #   if: runner.os == 'Linux'
+      #   run: xvfb-run npm run test:e2e -- --config wdio-manual.conf.js
+      # - name: Run E2E (manual driver, Windows)
+      #   if: runner.os == 'Windows'
+      #   run: npm run test:e2e -- --config wdio-manual.conf.js

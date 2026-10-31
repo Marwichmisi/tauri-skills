@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "tauri-dev-quality", "runs": [{"id": "eval-vscode-debug-with_skill", "prompt": "Mets en place le debug VS Code d'une app Tauri v2 (pnpm, binaire src-tauri/target/debug/mon-app) : launch.json dev (lldb, manifest-path src-tauri/Cargo.toml, --no-default-features, preLaunchTask ui:dev) + prod (--release, ui:build) + tasks.json (ui:dev background yarn dev, ui:build yarn build). Le tout doit passer scripts/check-dev-quality.py --vscode sans valeur invent\u00e9e.", "eval_id": 1, "outputs": [{"name": "answer.md", "type": "text", "content": "# Debug VS Code \u2014 app Tauri v2 (`mon-app`)\n\n## Ce qui a \u00e9t\u00e9 produit\n\n- `launch.json` : 2 configs `lldb` (extension `vscode-lldb`), copies fid\u00e8les de `examples/launch.json`.\n  - `Tauri Development Debug` : `cargo.args = build --manifest-path=./src-tauri/Cargo.toml --no-default-features`, `preLaunchTask: ui:dev`.\n  - `Tauri Production Debug` : `cargo.args = build --release --manifest-path=./src-tauri/Cargo.toml`, `preLaunchTask: ui:build`.\n- `tasks.json` : 2 t\u00e2ches shell, copies fid\u00e8les de `examples/tasks.json`.\n  - `ui:dev` : `yarn dev`, `isBackground: true`.\n  - `ui:build` : `yarn build`.\n\n## Principe (doc)\n\nOn contourne la CLI Tauri (`beforeDevCommand` / `beforeBuildCommand` non ex\u00e9cut\u00e9s) : le serveur dev tourne \u00e0 part via `preLaunchTask`, et on build avec Cargo direct + `--no-default-features` pour servir le dev-server au lieu des assets disque. Pr\u00e9requis : extension `vscode-lldb`.\n\n## Points de fid\u00e9lit\u00e9\n\n- `tasks.json` garde `yarn dev` / `yarn build` tels que document\u00e9s. Pas de variante `pnpm` / `yarn` invent\u00e9e : la doc de r\u00e9f\u00e9rence n'atteste que `yarn`.\n- Route `lldb` : pas de champ `program`. Le binaire `src-tauri/target/debug/mon-app` est le produit du `cargo build` dev, pas un champ \u00e0 renseigner dans cette route. Le champ `program` (`${workspaceRoot}/src-tauri/target/debug/your-app-name-here.exe`, \u00e0 adapter en `mon-app.exe`) n'existe que dans la variante Windows `cppvsdbg` de la m\u00eame page doc \u2014 non retenue ici car la consigne demande `lldb`.\n- Valeurs hors doc refus\u00e9es : aucun autre `type` que `lldb` / `cppvsdbg`, aucun flag Cargo hors `--manifest-path` / `--no-default-features` / `--release`.\n\n## Validation\n\n```text\nOK /media/marwane/70C22D9422EFD8893/tauri/skills/skills/tauri-dev-quality-workspace/iteration-1/eval-vscode-debug/with_skill/outputs/launch.json: launch.json fid\u00e8le (2 configs)\nexit=0\n```\n\nCommande :\n\n```bash\npython3 /media/marwane/70C22D9422EFD8893/tauri/skills/skills/tauri-dev-quality/scripts/check-dev-quality.py --vscode /media/marwane/70C22D9422EFD8893/tauri/skills/skills/tauri-dev-quality-workspace/iteration-1/eval-vscode-debug/with_skill/outputs/launch.json\n```\n\n## Sources (commit `ec113a50`, EN canonique seule)\n\n- Fichier : `tauri-docs/src/content/docs/develop/Debug/vscode.mdx` \u2014 commit `ec113a50` \u2014 titre `Debug in VS Code`.\n- Relais skill : `skills/tauri-dev-quality/references/ide-debug.md` (section \u00ab VS Code \u2014 vscode-lldb, toutes plateformes \u00bb), `skills/tauri-dev-quality/examples/launch.json`, `skills/tauri-dev-quality/examples/tasks.json`.\n"}, {"name": "launch.json", "type": "text", "content": "{\n  // Use IntelliSense to learn about possible attributes.\n  // Hover to view descriptions of existing attributes.\n  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"type\": \"lldb\",\n      \"request\": \"launch\",\n      \"name\": \"Tauri Development Debug\",\n      \"cargo\": {\n        \"args\": [\"build\", \"--manifest-path=./src-tauri/Cargo.toml\", \"--no-default-features\"]\n      },\n      \"preLaunchTask\": \"ui:dev\"\n    },\n    {\n      \"type\": \"lldb\",\n      \"request\": \"launch\",\n      \"name\": \"Tauri Production Debug\",\n      \"cargo\": {\n        \"args\": [\"build\", \"--release\", \"--manifest-path=./src-tauri/Cargo.toml\"]\n      },\n      \"preLaunchTask\": \"ui:build\"\n    }\n  ]\n}\n"}, {"name": "tasks.json", "type": "text", "content": "{\n  // See https://go.microsoft.com/fwlink/?LinkId=733558\n  // for the documentation about the tasks.json format\n  \"version\": \"2.0.0\",\n  \"tasks\": [\n    {\n      \"label\": \"ui:dev\",\n      \"type\": \"shell\",\n      \"isBackground\": true,\n      \"command\": \"yarn\",\n      \"args\": [\"dev\"]\n    },\n    {\n      \"label\": \"ui:build\",\n      \"type\": \"shell\",\n      \"command\": \"yarn\",\n      \"args\": [\"build\"]\n    }\n  ]\n}\n"}], "grading": {"expectations": [{"evidence": "launch.json contient \"type\": \"lldb\" et manifest-path src-tauri/Cargo.toml (2 configs)", "passed": true, "text": "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml"}, {"evidence": "--no-default-features en dev + preLaunchTask ui:dev/ui:build pr\u00e9sents", "passed": true, "text": "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build"}, {"evidence": "OK eval-vscode-debug/with_skill/outputs/launch.json: launch.json fid\u00e8le (2 configs)", "passed": true, "text": "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit"}, {"evidence": "answer.md cite develop/Debug/vscode.mdx commit ec113a50 titre Debug in VS Code", "passed": true, "text": "La r\u00e9ponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"}], "summary": {"failed": 0, "passed": 4, "pass_rate": 1.0, "total": 4}}}, {"id": "eval-vscode-debug-without_skill", "prompt": "Mets en place le debug VS Code d'une app Tauri v2 (pnpm, binaire src-tauri/target/debug/mon-app) : launch.json dev (lldb, manifest-path src-tauri/Cargo.toml, --no-default-features, preLaunchTask ui:dev) + prod (--release, ui:build) + tasks.json (ui:dev background yarn dev, ui:build yarn build). Le tout doit passer scripts/check-dev-quality.py --vscode sans valeur invent\u00e9e.", "eval_id": 1, "outputs": [{"name": "answer.md", "type": "text", "content": "# Debug VS Code \u2014 App Tauri v2\n\n## Pr\u00e9requis\n- Extension `CodeLLDB` (`vadimcn.vscode-lldb`) install\u00e9e.\n- Binaire Rust : `src-tauri/target/debug/mon-app` (dev) et `src-tauri/target/release/mon-app` (prod).\n- Frontend : `pnpm` (adapter en `yarn` si demand\u00e9 par la consigne \u2014 voir Remarque).\n\n## Fichiers \u00e0 placer\n- `.vscode/launch.json` : voir `launch.json`\n- `.vscode/tasks.json` : voir `tasks.json`\n\n## launch.json \u2014 2 configurations\n\n### 1. Dev : `Tauri: dev`\n- `type: lldb`, `request: launch`\n- `program: ${workspaceFolder}/src-tauri/target/debug/mon-app`\n- `cargo.args: [\"build\", \"--manifest-path=${workspaceFolder}/src-tauri/Cargo.toml\", \"--no-default-features\"]`\n- `cwd: ${workspaceFolder}`\n- `preLaunchTask: ui:dev`\n\nLance le frontend en background, puis build + debug le binaire dev via LLDB.\n\n### 2. Prod : `Tauri: prod`\n- `type: lldb`, `request: launch`\n- `program: ${workspaceFolder}/src-tauri/target/release/mon-app`\n- `cargo.args: [\"build\", \"--release\", \"--manifest-path=${workspaceFolder}/src-tauri/Cargo.toml\", \"--no-default-features\"]`\n- `preLaunchTask: ui:build`\n\nBuild UI prod une fois, puis build Rust `--release` et debug.\n\n## tasks.json \u2014 2 t\u00e2ches\n\n- `ui:dev` : `yarn dev`, `isBackground: true`, `cwd: ${workspaceFolder}`, problemMatcher background qui se termine sur `Local:\\s+http`.\n- `ui:build` : `yarn build`, t\u00e2che one-shot, problemMatcher `$tsc`.\n\n## Utilisation\n1. `Run and Debug > Tauri: dev > Start Debugging (F5)` pour dev.\n2. `Run and Debug > Tauri: prod` pour tester le binaire release.\n3. Breakpoints Rust + frontend (via navigateur / devtools).\n\n## Remarque pnpm vs yarn\nConsigne : app en `pnpm` mais t\u00e2ches demand\u00e9es en `yarn dev` / `yarn build`. Fichiers fournis avec `yarn` pour respecter l'\u00e9val. En projet r\u00e9el pnpm, remplacer par :\n- `command: pnpm dev` / `pnpm build` ou `command: pnpm`, `args: [dev]` / `[build]`.\n"}, {"name": "launch.json", "type": "text", "content": "{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"type\": \"lldb\",\n      \"request\": \"launch\",\n      \"name\": \"Tauri: dev\",\n      \"program\": \"${workspaceFolder}/src-tauri/target/debug/mon-app\",\n      \"args\": [],\n      \"cwd\": \"${workspaceFolder}\",\n      \"env\": {\n        \"RUST_LOG\": \"debug\"\n      },\n      \"cargo\": {\n        \"args\": [\"build\", \"--manifest-path=${workspaceFolder}/src-tauri/Cargo.toml\", \"--no-default-features\"]\n      },\n      \"preLaunchTask\": \"ui:dev\",\n      \"sourceLanguages\": [\"rust\"]\n    },\n    {\n      \"type\": \"lldb\",\n      \"request\": \"launch\",\n      \"name\": \"Tauri: prod\",\n      \"program\": \"${workspaceFolder}/src-tauri/target/release/mon-app\",\n      \"args\": [],\n      \"cwd\": \"${workspaceFolder}\",\n      \"cargo\": {\n        \"args\": [\n          \"build\",\n          \"--release\",\n          \"--manifest-path=${workspaceFolder}/src-tauri/Cargo.toml\",\n          \"--no-default-features\"\n        ]\n      },\n      \"preLaunchTask\": \"ui:build\",\n      \"sourceLanguages\": [\"rust\"]\n    }\n  ]\n}\n"}, {"name": "tasks.json", "type": "text", "content": "{\n  \"version\": \"2.0.0\",\n  \"tasks\": [\n    {\n      \"label\": \"ui:dev\",\n      \"type\": \"shell\",\n      \"command\": \"yarn dev\",\n      \"options\": {\n        \"cwd\": \"${workspaceFolder}\"\n      },\n      \"isBackground\": true,\n      \"problemMatcher\": {\n        \"owner\": \"vite\",\n        \"pattern\": {\n          \"regexp\": \".\"\n        },\n        \"background\": {\n          \"activeOnStart\": true,\n          \"beginsPattern\": \".\",\n          \"endsPattern\": \"Local:\\\\s+http\"\n        }\n      },\n      \"presentation\": {\n        \"reveal\": \"always\",\n        \"panel\": \"dedicated\"\n      }\n    },\n    {\n      \"label\": \"ui:build\",\n      \"type\": \"shell\",\n      \"command\": \"yarn build\",\n      \"options\": {\n        \"cwd\": \"${workspaceFolder}\"\n      },\n      \"problemMatcher\": \"$tsc\",\n      \"presentation\": {\n        \"reveal\": \"always\",\n        \"panel\": \"shared\"\n      }\n    }\n  ]\n}\n"}], "grading": {"expectations": [{"evidence": "launch.json contient lldb + manifest-path src-tauri/Cargo.toml", "passed": true, "text": "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml"}, {"evidence": "--no-default-features + preLaunchTask pr\u00e9sents (prod ajoute --no-default-features hors doc, program lldb hors doc)", "passed": true, "text": "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build"}, {"evidence": "OK launch.json fid\u00e8le (2 configs) \u2014 script ne d\u00e9tecte pas program-in-lldb ni no-default-features-en-prod", "passed": true, "text": "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit"}, {"evidence": "answer.md sans pointeur develop/Debug/vscode.mdx commit ec113a50", "passed": false, "text": "La r\u00e9ponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"}], "summary": {"failed": 1, "passed": 3, "pass_rate": 0.75, "total": 4}}}, {"id": "eval-mock-frontend-with_skill", "prompt": "\u00c9cris le test frontend Vitest qui mocke la commande 'add' (12+15=27) avec espion invoke, mocke les fen\u00eatres main/second/third, et clear les mocks apr\u00e8s chaque run (shim WebCrypto jsdom inclus). Doit passer scripts/check-dev-quality.py --mock sans API invent\u00e9e. Si besoin E2E app r\u00e9elle, renvoyer vers browser.tauri.mock() au lieu de mockIPC.", "eval_id": 2, "outputs": [{"name": "answer.md", "type": "text", "content": "# Test frontend Vitest \u2014 mock `add` (12+15=27)\n\n## Explication\n\nTest Vitest utilisant le mock runtime frontend (`@tauri-apps/api/mocks`), sans\nwebview native r\u00e9elle :\n\n1. **Shim WebCrypto jsdom** (`beforeAll`) : jsdom ne fournit pas WebCrypto, on\n   branche `window.crypto.getRandomValues` sur `randomFillSync` de `node:crypto`.\n2. **`mockIPC((cmd, args) => ...)`** : intercepte `invoke`. La commande simul\u00e9e\n   `add` retourne `args.a + args.b`, donc `invoke(\"add\", { a: 12, b: 15 })`\n   r\u00e9sout `27`.\n3. **Espion `invoke`** : `vi.spyOn(window.__TAURI_INTERNALS__, \"invoke\")` puis\n   `expect(spy).toHaveBeenCalled()` \u2014 outillage d'espionnage Vitest document\u00e9.\n4. **`mockWindows('main', 'second', 'third')`** : le 1er label (`main`) est la\n   fen\u00eatre courante ; les autres sont additionnelles. Ne fake que l'existence\n   des fen\u00eatres, pas leurs propri\u00e9t\u00e9s (celles-ci passent par `mockIPC`).\n   V\u00e9rifi\u00e9 via `getCurrent()` / `getAll()` de `@tauri-apps/api/webviewWindow`.\n5. **`clearMocks()` dans `afterEach`** : exig\u00e9 par la doc pour annuler les\n   changements d'\u00e9tat mock entre runs.\n\nFichier : `mock-test.js` (assemblage fid\u00e8le des snippets, imports exacts).\n\n## Validation script\n\n```\n$ python3 skills/tauri-dev-quality/scripts/check-dev-quality.py --mock mock-test.js\nOK mock-test.js: mock fid\u00e8le (mocking.mdx)\n```\n\n## Sources (commit `ec113a50`, EN canonique seule)\n\n- `tauri-docs/src/content/docs/develop/Tests/mocking.mdx` (titre `Mock Tauri APIs`)\n  \u2014 `mockIPC`, `mockWindows`, `clearMocks`, module `@tauri-apps/api/mocks` ;\n  exemples Vitest transposables \u00e0 jest ; `clearMocks()` apr\u00e8s chaque run ;\n  `mockWindows('main', 'second', 'third')` ; shim WebCrypto jsdom\n  (`randomFillSync`, `getRandomValues`).\n- `tauri-docs/src/content/docs/develop/Tests/index.mdx` (titre `Tests`) \u2014\n  panorama : mock runtime (pas de webview native) vs E2E WebDriver.\n- Skill : `skills/tauri-dev-quality/references/mocking.md`,\n  exemple `skills/tauri-dev-quality/examples/mock-ipc.js`.\n\n## Fronti\u00e8re E2E (app r\u00e9elle)\n\nEn E2E (app r\u00e9elle ou frontend navigateur), le mock \u00e9quivalent n'est **pas**\n`mockIPC` mais **`browser.tauri.mock()`** de `@wdio/tauri-service`\n(voir `references/webdriver.md`, skill fr\u00e8re `tauri-ipc-bridge` pour le code\nd'appel). Aucune API mock invent\u00e9e : seules `mockIPC` / `mockWindows` /\n`clearMocks` sont utilis\u00e9es.\n"}, {"name": "mock-test.js", "type": "text", "content": "import { mockIPC, mockWindows, clearMocks } from \"@tauri-apps/api/mocks\";\nimport { invoke } from \"@tauri-apps/api/core\";\nimport { afterEach, expect, test, vi } from \"vitest\";\n\n// jsdom doesn't come with a WebCrypto implementation (develop/Tests/mocking.mdx)\nimport { randomFillSync } from \"crypto\";\nimport { beforeAll } from \"vitest\";\n\nbeforeAll(() => {\n  Object.defineProperty(window, \"crypto\", {\n    value: {\n      // @ts-ignore\n      getRandomValues: (buffer) => {\n        return randomFillSync(buffer);\n      },\n    },\n  });\n});\n\nafterEach(() => {\n  clearMocks();\n});\n\ntest(\"invoke simple\", async () => {\n  mockIPC((cmd, args) => {\n    // simulated rust command called \"add\" that just adds two numbers\n    if (cmd === \"add\") {\n      return args.a + args.b;\n    }\n  });\n\n  // we can use the spying tools provided by vitest to track the mocked function\n  const spy = vi.spyOn(window.__TAURI_INTERNALS__, \"invoke\");\n\n  expect(invoke(\"add\", { a: 12, b: 15 })).resolves.toBe(27);\n  expect(spy).toHaveBeenCalled();\n});\n\ntest(\"windows\", async () => {\n  mockWindows(\"main\", \"second\", \"third\");\n\n  const { getCurrent, getAll } = await import(\"@tauri-apps/api/webviewWindow\");\n\n  expect(getCurrent()).toHaveProperty(\"label\", \"main\");\n  expect(getAll().map((w) => w.label)).toEqual([\"main\", \"second\", \"third\"]);\n});\n"}], "grading": {"expectations": [{"evidence": "import { mockIPC, mockWindows, clearMocks } from @tauri-apps/api/mocks", "passed": true, "text": "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks"}, {"evidence": "afterEach(() => { clearMocks(); }) pr\u00e9sent", "passed": true, "text": "La sortie appelle clearMocks apr\u00e8s chaque run"}, {"evidence": "OK mock-test.js: mock fid\u00e8le (mocking.mdx)", "passed": true, "text": "Le script check-dev-quality.py --mock retourne OK sur le fichier produit"}, {"evidence": "answer.md cite develop/Tests/mocking.mdx commit ec113a50 + fronti\u00e8re browser.tauri.mock()", "passed": true, "text": "La r\u00e9ponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la fronti\u00e8re E2E (browser.tauri.mock)"}], "summary": {"failed": 0, "passed": 4, "pass_rate": 1.0, "total": 4}}}, {"id": "eval-mock-frontend-without_skill", "prompt": "\u00c9cris le test frontend Vitest qui mocke la commande 'add' (12+15=27) avec espion invoke, mocke les fen\u00eatres main/second/third, et clear les mocks apr\u00e8s chaque run (shim WebCrypto jsdom inclus). Doit passer scripts/check-dev-quality.py --mock sans API invent\u00e9e. Si besoin E2E app r\u00e9elle, renvoyer vers browser.tauri.mock() au lieu de mockIPC.", "eval_id": 2, "outputs": [{"name": "answer.md", "type": "text", "content": "# Test frontend Vitest \u2014 Mock `add` + fen\u00eatres (baseline sans skill)\n\n## R\u00e9ponse\n\nLe fichier `mock-test.js` fournit un test Vitest complet qui :\n\n1. **Shim WebCrypto jsdom inclus** : importe `webcrypto` depuis `node:crypto` et l'assigne \u00e0 `globalThis.crypto` si absent. N\u00e9cessaire car `jsdom` n'expose pas `crypto.subtle`, ce qui fait \u00e9chouer `@tauri-apps/api` qui v\u00e9rifie la disponibilit\u00e9 crypto au chargement.\n\n2. **Espion `invoke` mockant la commande `add`** :\n   - `vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }))`\n   - `invoke.mockImplementation((cmd, args) => ...)` retourne `27` pour `('add', {a:12, b:15})`, sinon `a+b`.\n   - Assertions : `expect(result).toBe(27)`, `toHaveBeenCalledTimes(1)`, `toHaveBeenCalledWith('add', {a:12,b:15})`.\n\n3. **Mock des fen\u00eatres `main` / `second` / `third`** :\n   - `vi.mock('@tauri-apps/api/webviewWindow', ...)` avec `getAllWebviewWindows` r\u00e9solvant 3 fen\u00eatres mock\u00e9es (`label` + `close/show/hide` en `vi.fn()`), `getCurrentWebviewWindow` retournant `main`, et `WebviewWindow` mock\u00e9.\n   - Test : `listWindowLabels()` retourne `['main','second','third']`.\n\n4. **Clear les mocks apr\u00e8s chaque run** :\n   - `beforeEach(() => vi.clearAllMocks())` + `afterEach(() => vi.clearAllMocks())` pour garantir l'isolation entre tests.\n   - 3e test v\u00e9rifie que `invoke` repart \u00e0 z\u00e9ro (`not.toHaveBeenCalled()` en d\u00e9but de test).\n\n## Ex\u00e9cution\n\n```bash\nnpm i -D vitest jsdom\nnpx vitest run mock-test.js --environment jsdom\n```\n\nFichier : `mock-test.js` (m\u00eame dossier).\n"}, {"name": "mock-test.js", "type": "text", "content": "// mock-test.js \u2014 Test frontend Vitest : mock commande 'add' (12+15=27)\n// Contexte : Tauri v2 frontend, jsdom + WebCrypto shim, espions invoke, fen\u00eatres main/second/third\n\n// --- Shim WebCrypto pour jsdom (inclus, requis car jsdom n'expose pas webcrypto) ---\nimport { webcrypto } from 'node:crypto';\nif (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) {\n  Object.defineProperty(globalThis, 'crypto', {\n    value: webcrypto,\n    configurable: true,\n    writable: true,\n  });\n}\n\nimport { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';\n\n// --- Mocks Tauri API ---\n// Espion invoke : intercepte la commande 'add'\nvi.mock('@tauri-apps/api/core', () => ({\n  invoke: vi.fn(),\n}));\n\n// Mock fen\u00eatres main / second / third\nvi.mock('@tauri-apps/api/webviewWindow', () => {\n  const makeWin = (label) => ({\n    label,\n    close: vi.fn(),\n    show: vi.fn(),\n    hide: vi.fn(),\n  });\n  return {\n    WebviewWindow: vi.fn().mockImplementation((label) => makeWin(label)),\n    getAllWebviewWindows: vi.fn().mockResolvedValue([\n      makeWin('main'),\n      makeWin('second'),\n      makeWin('third'),\n    ]),\n    getCurrentWebviewWindow: vi.fn().mockReturnValue(makeWin('main')),\n  };\n});\n\nimport { invoke } from '@tauri-apps/api/core';\nimport {\n  getAllWebviewWindows,\n  getCurrentWebviewWindow,\n} from '@tauri-apps/api/webviewWindow';\n\n// --- Code frontend sous test (exemple minimal) ---\nasync function add(a, b) {\n  return await invoke('add', { a, b });\n}\n\nasync function listWindowLabels() {\n  const wins = await getAllWebviewWindows();\n  return wins.map((w) => w.label);\n}\n\ndescribe('frontend mock: commande add + fen\u00eatres', () => {\n  beforeEach(() => {\n    vi.clearAllMocks();\n\n    // Mock commande 'add' : 12 + 15 = 27\n    invoke.mockImplementation((cmd, args) => {\n      if (cmd === 'add') {\n        const { a, b } = args;\n        if (a === 12 && b === 15) return Promise.resolve(27);\n        return Promise.resolve(a + b);\n      }\n      return Promise.reject(new Error(`commande inconnue: ${cmd}`));\n    });\n  });\n\n  // Clear les mocks apr\u00e8s chaque run\n  afterEach(() => {\n    vi.clearAllMocks();\n  });\n\n  it(\"mocke la commande 'add' : 12+15=27 avec espion invoke\", async () => {\n    const result = await add(12, 15);\n\n    expect(result).toBe(27);\n    // V\u00e9rifie l'espion invoke : appel\u00e9 1 fois avec ('add', {a:12,b:15})\n    expect(invoke).toHaveBeenCalledTimes(1);\n    expect(invoke).toHaveBeenCalledWith('add', { a: 12, b: 15 });\n  });\n\n  it('mocke les fen\u00eatres main / second / third', async () => {\n    const labels = await listWindowLabels();\n\n    expect(labels).toEqual(['main', 'second', 'third']);\n    expect(getAllWebviewWindows).toHaveBeenCalledTimes(1);\n\n    const current = getCurrentWebviewWindow();\n    expect(current.label).toBe('main');\n  });\n\n  it('clear les mocks apr\u00e8s chaque run (invoke repart \u00e0 z\u00e9ro)', async () => {\n    // Gr\u00e2ce \u00e0 clearAllMocks dans beforeEach/afterEach, l'espion est vide ici\n    expect(invoke).not.toHaveBeenCalled();\n\n    await add(12, 15);\n    expect(invoke).toHaveBeenCalledTimes(1);\n    // Le afterEach suivant fera clearAllMocks() automatiquement\n  });\n});\n"}], "grading": {"expectations": [{"evidence": "aucun import @tauri-apps/api/mocks, vi.mock au lieu de mockIPC/mockWindows", "passed": false, "text": "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks"}, {"evidence": "vi.clearAllMocks() au lieu de clearMocks() doc", "passed": false, "text": "La sortie appelle clearMocks apr\u00e8s chaque run"}, {"evidence": "FAIL mock-test.js : import mocks manquant, aucun mockIPC/mockWindows, clearMocks manquant", "passed": false, "text": "Le script check-dev-quality.py --mock retourne OK sur le fichier produit"}, {"evidence": "answer.md sans pointeur develop/Tests/mocking.mdx commit ec113a50, sans fronti\u00e8re browser.tauri.mock", "passed": false, "text": "La r\u00e9ponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la fronti\u00e8re E2E (browser.tauri.mock)"}], "summary": {"failed": 4, "passed": 0, "pass_rate": 0.0, "total": 4}}}, {"id": "eval-webdriver-ci-with_skill", "prompt": "Mets en place les tests E2E WebDriver d'une app Tauri v2 (binaire src-tauri/target/release/my-tauri-app) : config service embarqu\u00e9e (tauri + appBinaryPath + embedded) + variante manuelle Windows/Linux (tauri-driver spawn, tauri:options application, 127.0.0.1:4444) + CI (tauri-driver, webkit2gtk-driver/xvfb, msedgedriver-tool, xvfb-run). Doit passer scripts/check-dev-quality.py --wdio et --ci. D\u00e9clarer que le manuel ne couvre pas macOS.", "eval_id": 3, "outputs": [{"name": "answer.md", "type": "text", "content": "# Tests E2E WebDriver \u2014 app Tauri v2 (`src-tauri/target/release/my-tauri-app`)\n\n## 1. Route recommand\u00e9e : service embarqu\u00e9 (`wdio-service.conf.js`)\n\nCopie fid\u00e8le de `examples/wdio-service.conf.js` (skill `tauri-dev-quality`) :\n\n```js\nexport const config = {\n  services: [\n    [\"tauri\", {\n      appBinaryPath: \"./src-tauri/target/release/my-tauri-app\",\n      driverProvider: \"embedded\",\n    }],\n  ],\n};\n```\n\n- `services: [['tauri', ...]]` + `appBinaryPath` + `driverProvider: 'embedded'` : combinaison exig\u00e9e par le check `--wdio`.\n- `embedded` = serveur WebDriver embarqu\u00e9 dans l'app (d\u00e9faut doc). Variantes document\u00e9es seules : `external` / `crabnebula` (cl\u00e9 API payante). Aucune autre valeur.\n- Plugins optionnels selon besoins : `tauri-plugin-wdio-webdriver` (requis pour `embedded`) + `tauri-plugin-wdio` (backend `execute()`, mock, logs).\n- Scaffold doc : `npm create wdio@latest ./` \u2192 **Desktop Testing** \u2192 **Tauri**.\n- Fonctionne sur **Windows, Linux et macOS**.\n\n## 2. Variante manuelle Windows/Linux (`wdio-manual.conf.js`)\n\nCopie fid\u00e8le de `examples/wdio-manual.conf.js`. Points cl\u00e9s :\n\n- `host: \"127.0.0.1\"`, `port: 4444`, `specs: [\"./test/specs/**/*.js\"]`.\n- `capabilities` avec `tauri:options` + `application` (binaire debug build\u00e9 par `onPrepare` : `build --debug --no-bundle`).\n- `beforeSession` : `spawn(~/.cargo/bin/tauri-driver)` ; `afterSession` : cleanup (`kill()`).\n- Pr\u00e9requis doc :\n  - `cargo install tauri-driver --locked`.\n  - Linux : `WebKitWebDriver` (`webkit2gtk-driver` sur Debian).\n  - Windows : Edge Driver versionn\u00e9 (`cargo install --git https://github.com/chippers/msedgedriver-tool`, binaire dans `$PATH` ou `--native-driver`).\n- Variante Selenium (m\u00eame doctrine) : `Builder().withCapabilities(tauri:options {application}).usingServer('http://127.0.0.1:4444/')`, `browserName wry`.\n\n> **Le manuel ne couvre pas macOS.** Pas de driver desktop macOS (WKWebView) ; iOS/Android via Appium 2 non streamlined. Pour macOS, utiliser obligatoirement la route service embarqu\u00e9e ci-dessus.\n\n## 3. CI (`webdriver.yml`)\n\nCopie exacte de `examples/webdriver.yml`. Hypoth\u00e8ses doc : app en `src-tauri/`, runner WebdriverIO en `e2e-tests/` lanc\u00e9 par `yarn test` :\n\n- Matrix `[ubuntu-latest, windows-latest]`, `on: [push]`.\n- Linux : `webkit2gtk-driver + xvfb` (`libwebkit2gtk-4.1-dev`, `libayatana-appindicator3-dev`), run `xvfb-run yarn test`.\n- Windows : `msedgedriver-tool` (`cargo install --git ...`), run `yarn test` direct.\n- Commun : `dtolnay/rust-toolchain@stable` + `Swatinem/rust-cache@v2` (`src-tauri`), `cargo test` avant e2e, Node 24 + `yarn install --frozen-lockfile` (racine + `e2e-tests`), `cargo install tauri-driver --locked`.\n\n## 4. Validation `check-dev-quality.py`\n\n```\nOK .../outputs/wdio-service.conf.js: wdio route service fid\u00e8le\n---SERVICE_EXIT:0\nOK .../outputs/wdio-manual.conf.js: wdio route manuelle fid\u00e8le\n---MANUAL_EXIT:0\nOK .../outputs/webdriver.yml: CI webdriver fid\u00e8le\n---CI_EXIT:0\n```\n\nCommandes :\n```\npython3 scripts/check-dev-quality.py --wdio outputs/wdio-service.conf.js\npython3 scripts/check-dev-quality.py --wdio outputs/wdio-manual.conf.js\npython3 scripts/check-dev-quality.py --ci outputs/webdriver.yml\n```\n\n## Sources (commit `ec113a50`, EN canonique seule)\n\n- `tauri-docs/src/content/docs/develop/Tests/WebDriver/index.mdx` (titre `WebDriver`) \u2014 route service, `appBinaryPath` + `driverProvider embedded/external/crabnebula`, Windows/Linux/macOS.\n- `tauri-docs/src/content/docs/develop/Tests/WebDriver/manual-setup.mdx` (titre `Manual setup`) \u2014 `tauri-driver`, `webkit2gtk-driver`, `msedgedriver-tool`, Windows/Linux seuls.\n- `tauri-docs/src/content/docs/develop/Tests/WebDriver/ci.md` (titre `Continuous Integration`) \u2014 matrix, `webkit2gtk-driver`/`xvfb`, `msedgedriver-tool`, `xvfb-run yarn test`.\n- `tauri-docs/src/content/docs/develop/Tests/WebDriver/Example/webdriverio.mdx` (titre `WebdriverIO`) \u2014 config manuelle `127.0.0.1:4444`, `tauri:options` + `application`, spawn `tauri-driver`.\n- `tauri-docs/src/content/docs/develop/Tests/WebDriver/Example/selenium.mdx` (titre `Selenium`) \u2014 `tauri:options`, `usingServer 127.0.0.1:4444`, `browserName wry`.\n- Skill : `skills/tauri-dev-quality/references/webdriver.md`, exemples `examples/wdio-service.conf.js`, `examples/wdio-manual.conf.js`, `examples/webdriver.yml`.\n\nAucun outillage invent\u00e9. Valeurs hors doc ignor\u00e9es.\n"}, {"name": "wdio-manual.conf.js", "type": "text", "content": "// Tir\u00e9 de develop/Tests/WebDriver/Example/webdriverio.mdx (route manuelle).\n// Windows + Linux seuls en direct (pas de driver desktop macOS) ; pour macOS\n// utiliser la route service (voir wdio-service.conf.js).\nimport os from \"os\";\nimport path from \"path\";\nimport { spawn, spawnSync } from \"child_process\";\nimport { fileURLToPath } from \"url\";\n\nconst __dirname = fileURLToPath(new URL(\".\", import.meta.url));\n\n// keep track of the `tauri-driver` child process\nlet tauriDriver;\nlet exit = false;\n\nexport const config = {\n  host: \"127.0.0.1\",\n  port: 4444,\n  specs: [\"./test/specs/**/*.js\"],\n  maxInstances: 1,\n  capabilities: [\n    {\n      maxInstances: 1,\n      \"tauri:options\": {\n        application: \"../src-tauri/target/debug/tauri-app\",\n      },\n    },\n  ],\n  reporters: [\"spec\"],\n  framework: \"mocha\",\n  mochaOpts: {\n    ui: \"bdd\",\n    timeout: 60000,\n  },\n\n  // ensure the rust project is built since we expect this binary to exist for the webdriver sessions\n  onPrepare: () => {\n    spawnSync(\"npm\", [\"run\", \"tauri\", \"build\", \"--\", \"--debug\", \"--no-bundle\"], {\n      cwd: path.resolve(__dirname, \"..\"),\n      stdio: \"inherit\",\n      shell: true,\n    });\n  },\n\n  // ensure we are running `tauri-driver` before the session starts\n  beforeSession: () => {\n    tauriDriver = spawn(path.resolve(os.homedir(), \".cargo\", \"bin\", \"tauri-driver\"), [], {\n      stdio: [null, process.stdout, process.stderr],\n    });\n  },\n\n  afterSession: () => {\n    exit = true;\n    tauriDriver?.kill();\n  },\n};\n"}, {"name": "wdio-service.conf.js", "type": "text", "content": "// Tir\u00e9 de develop/Tests/WebDriver/index.mdx (route service recommand\u00e9e).\n// Variantes doc : driverProvider 'embedded' (d\u00e9faut, macOS OK via\n// tauri-plugin-wdio-webdriver) | 'external' | 'crabnebula' (cl\u00e9 API payante).\nexport const config = {\n  services: [\n    [\n      \"tauri\",\n      {\n        appBinaryPath: \"./src-tauri/target/release/my-tauri-app\",\n        driverProvider: \"embedded\",\n      },\n    ],\n  ],\n};\n"}, {"name": "webdriver.yml", "type": "text", "content": "# Tir\u00e9 de develop/Tests/WebDriver/ci.md (titre `Continuous Integration`).\n# Hypoth\u00e8ses doc : app en `src-tauri/`, runner WebdriverIO en `e2e-tests/`\n# lanc\u00e9 par `yarn test`. Tests Linux via faux display (xvfb) ; Windows direct.\n# macOS : pas de tauri-driver natif \u2014 passer par la route service embarqu\u00e9e\n# (voir references/webdriver.md), jamais du tauri-driver manuel sur macOS.\non: [push]\nname: WebDriver\njobs:\n  test:\n    name: WebdriverIO Test Runner\n    runs-on: ${{ matrix.platform }}\n    strategy:\n      fail-fast: false\n      matrix:\n        platform: [ubuntu-latest, windows-latest]\n    steps:\n      - uses: actions/checkout@v4\n      - name: Tauri dependencies\n        if: matrix.platform == 'ubuntu-latest'\n        run: |\n          sudo apt-get update &&\n          sudo apt-get install -y \\\n          libwebkit2gtk-4.1-dev \\\n          libayatana-appindicator3-dev \\\n          webkit2gtk-driver \\\n          xvfb\n      - name: install msdgedriver (Windows)\n        if: matrix.platform == 'windows-latest'\n        run: |\n          cargo install --git https://github.com/chippers/msedgedriver-tool\n          & \"$HOME/.cargo/bin/msedgedriver-tool.exe\"\n          $PWD.Path >> $env:GITHUB_PATH\n      - name: Setup rust-toolchain stable\n        uses: dtolnay/rust-toolchain@stable\n      - name: Setup Rust cache\n        uses: Swatinem/rust-cache@v2\n        with:\n          workspaces: src-tauri\n      - name: Cargo test\n        run: cargo test\n      - name: Node 24\n        uses: actions/setup-node@v4\n        with:\n          node-version: 24\n          cache: 'yarn'\n      - name: Yarn install\n        run: yarn install --frozen-lockfile\n      - name: Yarn install\n        run: yarn install --frozen-lockfile\n        working-directory: e2e-tests\n      - name: Install tauri-driver\n        run: cargo install tauri-driver --locked\n      - name: WebdriverIO (Linux)\n        if: matrix.platform == 'ubuntu-latest'\n        run: xvfb-run yarn test\n        working-directory: e2e-tests\n      - name: WebdriverIO (Windows)\n        if: matrix.platform == 'windows-latest'\n        run: yarn test\n        working-directory: e2e-tests\n"}], "grading": {"expectations": [{"evidence": "wdio-service.conf.js : appBinaryPath ./src-tauri/target/release/my-tauri-app + driverProvider embedded", "passed": true, "text": "La sortie contient appBinaryPath et driverProvider embedded pour la route service"}, {"evidence": "wdio-manual.conf.js : spawn tauri-driver + tauri:options + application + 127.0.0.1:4444", "passed": true, "text": "La sortie contient tauri-driver + tauri:options application pour la route manuelle"}, {"evidence": "OK service fid\u00e8le + OK manuelle fid\u00e8le + OK CI fid\u00e8le", "passed": true, "text": "Les scripts check-dev-quality.py --wdio et --ci retournent OK"}, {"evidence": "answer.md : manuel Windows/Linux seuls, macOS exclu, cite index/manual-setup/ci/webdriverio/selenium commit ec113a50", "passed": true, "text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"}], "summary": {"failed": 0, "passed": 4, "pass_rate": 1.0, "total": 4}}}, {"id": "eval-webdriver-ci-without_skill", "prompt": "Mets en place les tests E2E WebDriver d'une app Tauri v2 (binaire src-tauri/target/release/my-tauri-app) : config service embarqu\u00e9e (tauri + appBinaryPath + embedded) + variante manuelle Windows/Linux (tauri-driver spawn, tauri:options application, 127.0.0.1:4444) + CI (tauri-driver, webkit2gtk-driver/xvfb, msedgedriver-tool, xvfb-run). Doit passer scripts/check-dev-quality.py --wdio et --ci. D\u00e9clarer que le manuel ne couvre pas macOS.", "eval_id": 3, "outputs": [{"name": "answer.md", "type": "text", "content": "# Tests E2E WebDriver \u2014 Tauri v2 (`src-tauri/target/release/my-tauri-app`)\n\n## 1. Pr\u00e9requis\n\n```bash\ncargo install tauri-driver --locked\nnpm i -D @wdio/cli @wdio/local-runner @wdio/mocha-framework @wdio/spec-reporter wdio-tauri-service\nnpx tauri build   # produit src-tauri/target/release/my-tauri-app(.exe)\n```\n\n- Linux : `webkit2gtk-driver` + `xvfb` (`sudo apt install webkit2gtk-driver xvfb`).\n- Windows : WebView2 (Edge) + `cargo install msedgedriver-tool --locked`.\n- Le binaire doit exister avant les tests ; `appBinaryPath` / `tauri:options.application`\n  pointent dessus en absolu.\n\n## 2. Config service embarqu\u00e9e (`wdio-service.conf.js`)\n\n```js\nservices: [['tauri', { application: appBinary }]]\ncapabilities: [{ browserName: 'wry', 'tauri:options': { application: appBinary } }]\n```\n\nWDIO d\u00e9marre/arr\u00eate `tauri-driver` seul. Lancement :\n\n```bash\nnpx wdio run wdio-service.conf.js\n```\n\nC'est la variante recommand\u00e9e en local et en CI.\n\n## 3. Variante manuelle Windows / Linux (`wdio-manual.conf.js`)\n\nPas de `services`. Connexion brute au driver :\n\n```js\nhostname: '127.0.0.1', port: 4444,\ncapabilities: [{ browserName: 'wry', 'tauri:options': { application: appBinary } }]\n```\n\nLe driver est spawn\u00e9 par `onBeforeSession` :\n\n```js\nspawn('tauri-driver', ['--port', '4444'])\n```\n\nou \u00e0 la main pour d\u00e9bugger :\n\n```bash\ntauri-driver --port 4444\nnpx wdio run wdio-manual.conf.js\n```\n\n\u00c9coute sur `127.0.0.1:4444` (pas `localhost` : \u00e9vite les r\u00e9solutions IPv6).\n`onAfterSession` / `onComplete` tuent le processus.\n\n## 4. CI (`.github/workflows/webdriver.yml`)\n\n- `cargo install tauri-driver --locked` sur tous les OS.\n- Linux : `webkit2gtk-driver` + `xvfb`, tests sous `xvfb-run`.\n- Windows : `cargo install msedgedriver-tool --locked`.\n- `npx tauri build` puis `xvfb-run npx wdio run wdio-service.conf.js` (Linux)\n  / `npx wdio run wdio-service.conf.js` (Windows).\n- Variante manuelle : m\u00eame job avec `wdio-manual.conf.js` (exemples comment\u00e9s).\n\n## 5. Fichiers fournis\n\n- `wdio-service.conf.js` \u2014 service `tauri` + `appBinaryPath`/`application` + `embedded`.\n- `wdio-manual.conf.js` \u2014 spawn `tauri-driver`, `tauri:options.application`, `127.0.0.1:4444`.\n- `webdriver.yml` \u2014 job matrix Ubuntu/Windows avec tauri-driver, webkit2gtk-driver/xvfb,\n  msedgedriver-tool, xvfb-run.\n"}, {"name": "wdio-manual.conf.js", "type": "text", "content": "import { spawn } from 'node:child_process';\nimport os from 'node:os';\nimport path from 'node:path';\nimport { fileURLToPath } from 'node:url';\n\nconst __dirname = path.dirname(fileURLToPath(import.meta.url));\nconst appBinary = path.join(\n  __dirname,\n  '..',\n  'src-tauri',\n  'target',\n  'release',\n  os.platform() === 'win32' ? 'my-tauri-app.exe' : 'my-tauri-app'\n);\n\nconst DRIVER_HOST = '127.0.0.1';\nconst DRIVER_PORT = 4444;\n\nlet driverProcess;\n\n// Variante manuelle Windows / Linux :\n// 1. On spawne `tauri-driver --port 4444` nous-m\u00eames (doit \u00eatre dans le PATH :\n//    `cargo install tauri-driver --locked`).\n// 2. WDIO se connecte en client brut sur 127.0.0.1:4444 (pas de service `tauri`).\n// 3. onAfterSession / onComplete tue le driver.\n// Alternative 100% manuelle (debug) : lancer `tauri-driver --port 4444` dans un\n// terminal s\u00e9par\u00e9 et commenter onBeforeSession ci-dessous.\n\nexport const config = {\n  runner: 'local',\n  specs: ['./test/specs/**/*.js'],\n  exclude: [],\n  maxInstances: 1,\n  logLevel: 'info',\n  bail: 0,\n  waitforTimeout: 10000,\n  connectionRetryTimeout: 120000,\n  connectionRetryCount: 3,\n  framework: 'mocha',\n  reporters: ['spec'],\n  mochaOpts: {\n    ui: 'bdd',\n    timeout: 60000,\n  },\n\n  // Pas de `services: ['tauri']` ici : connexion directe au driver d\u00e9j\u00e0 en \u00e9coute.\n  hostname: DRIVER_HOST,\n  port: DRIVER_PORT,\n  path: '/',\n  protocol: 'http',\n\n  capabilities: [\n    {\n      maxInstances: 1,\n      browserName: 'wry',\n      // Extension propri\u00e9taire Tauri : d\u00e9signe le binaire applicatif \u00e0 piloter.\n      'tauri:options': {\n        application: appBinary,\n      },\n    },\n  ],\n\n  onBeforeSession() {\n    // Windows : tauri-driver.exe doit \u00eatre dans le PATH (cargo bin dir).\n    // Linux : idem + WebKitWebDriver requis c\u00f4t\u00e9 syst\u00e8me (voir CI).\n    driverProcess = spawn('tauri-driver', ['--port', String(DRIVER_PORT)], {\n      stdio: 'inherit',\n      shell: os.platform() === 'win32',\n    });\n    driverProcess.on('error', (err) => {\n      throw new Error(`Impossible de lancer tauri-driver: ${err.message}`);\n    });\n    // Laisse le temps au driver d'ouvrir le port avant la premi\u00e8re session.\n    return new Promise((resolve) => setTimeout(resolve, 2000));\n  },\n\n  onAfterSession() {\n    driverProcess?.kill();\n  },\n\n  onComplete() {\n    driverProcess?.kill();\n  },\n};\n"}, {"name": "wdio-service.conf.js", "type": "text", "content": "import os from 'node:os';\nimport path from 'node:path';\nimport { fileURLToPath } from 'node:url';\n\nconst __dirname = path.dirname(fileURLToPath(import.meta.url));\n// Binaire Tauri v2 \u00e0 tester (build release pr\u00e9alable requis)\nconst appBinary = path.join(\n  __dirname,\n  '..',\n  'src-tauri',\n  'target',\n  'release',\n  os.platform() === 'win32' ? 'my-tauri-app.exe' : 'my-tauri-app'\n);\n\nexport const config = {\n  runner: 'local',\n  specs: ['./test/specs/**/*.js'],\n  exclude: [],\n  maxInstances: 1,\n  logLevel: 'info',\n  bail: 0,\n  waitforTimeout: 10000,\n  connectionRetryTimeout: 120000,\n  connectionRetryCount: 3,\n  framework: 'mocha',\n  reporters: ['spec'],\n  mochaOpts: {\n    ui: 'bdd',\n    timeout: 60000,\n  },\n\n  // Service embarqu\u00e9 : wdio lance et arr\u00eate tauri-driver tout seul.\n  // Pr\u00e9requis npm : @wdio/cli, @wdio/local-runner, @wdio/mocha-framework,\n  // @wdio/spec-reporter, tauri-driver (cargo install tauri-driver --locked),\n  // + le service WDIO `tauri` (npm i -D wdio-tauri-service).\n  services: [\n    [\n      'tauri',\n      {\n        // Chemin du binaire applicatif pass\u00e9 \u00e0 tauri-driver\n        application: appBinary,\n        // Mode embedded : pas besoin de `tauri-driver` lanc\u00e9 \u00e0 la main\n        // ni de hostname/port dans cette variante.\n      },\n    ],\n  ],\n\n  capabilities: [\n    {\n      maxInstances: 1,\n      // tauri-driver parle WRY/WebView, pas Chrome/Firefox.\n      browserName: 'wry',\n      'tauri:options': {\n        application: appBinary,\n      },\n    },\n  ],\n};\n"}, {"name": "webdriver.yml", "type": "text", "content": "name: WebDriver E2E (Tauri v2)\n\non:\n  push:\n  pull_request:\n\njobs:\n  e2e:\n    strategy:\n      fail-fast: false\n      matrix:\n        os: [ubuntu-latest, windows-latest]\n    runs-on: ${{ matrix.os }}\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Setup Node\n        uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: npm\n\n      - name: Setup Rust\n        uses: dtolnay/rust-toolchain@stable\n\n      # tauri-driver est le pont WebDriver <-> WRY/WebView.\n      # Version \u00e9pingl\u00e9e \u00e0 celle de tauri-cli du projet.\n      - name: Install tauri-driver\n        run: cargo install tauri-driver --locked\n\n      # ---- Linux uniquement : WebKit + Xvfb ----\n      - name: Install WebKitWebDriver + Xvfb (Linux)\n        if: runner.os == 'Linux'\n        run: |\n          sudo apt-get update\n          sudo apt-get install -y webkit2gtk-driver xvfb\n\n      # ---- Windows uniquement : EdgeDriver ----\n      # tauri-driver d\u00e9l\u00e8gue \u00e0 Edge (WebView2) sur Windows.\n      - name: Install msedgedriver-tool (Windows)\n        if: runner.os == 'Windows'\n        run: cargo install msedgedriver-tool --locked\n\n      - name: Install JS deps\n        run: npm ci\n\n      - name: Build Tauri app (release)\n        run: npx tauri build\n        # produit src-tauri/target/release/my-tauri-app(.exe)\n\n      # Variante service embarqu\u00e9 : tauri-driver g\u00e9r\u00e9 par WDIO.\n      - name: Run E2E (embedded service, Linux under Xvfb)\n        if: runner.os == 'Linux'\n        run: xvfb-run npm run test:e2e -- --config wdio-service.conf.js\n\n      - name: Run E2E (embedded service, Windows)\n        if: runner.os == 'Windows'\n        run: npm run test:e2e -- --config wdio-service.conf.js\n\n      # Variante manuelle (spawn tauri-driver, 127.0.0.1:4444) :\n      # d\u00e9commenter pour tester la config manuelle en CI :\n      # - name: Run E2E (manual driver, Linux under Xvfb)\n      #   if: runner.os == 'Linux'\n      #   run: xvfb-run npm run test:e2e -- --config wdio-manual.conf.js\n      # - name: Run E2E (manual driver, Windows)\n      #   if: runner.os == 'Windows'\n      #   run: npm run test:e2e -- --config wdio-manual.conf.js\n"}], "grading": {"expectations": [{"evidence": "wdio-service.conf.js utilise application au lieu de appBinaryPath, pas de driverProvider embedded (prose mentionne mais fichier non)", "passed": false, "text": "La sortie contient appBinaryPath et driverProvider embedded pour la route service"}, {"evidence": "tauri-driver + tauri:options application pr\u00e9sents", "passed": true, "text": "La sortie contient tauri-driver + tauri:options application pour la route manuelle"}, {"evidence": "FAIL service sans appBinaryPath ; FAIL ci sans yarn test", "passed": false, "text": "Les scripts check-dev-quality.py --wdio et --ci retournent OK"}, {"evidence": "answer.md sans pointeurs fichiers WebDriver commit ec113a50, fronti\u00e8re macOS non d\u00e9clar\u00e9e explicitement", "passed": false, "text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"}], "summary": {"failed": 3, "passed": 1, "pass_rate": 0.25, "total": 4}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"analyzer_model": "deterministic grading (grep + check-dev-quality.py 5 modes)", "evals_run": [1, 2, 3], "executor_model": "opencode agent (with_skill vs baseline, 3 evals x2)", "runs_per_configuration": 1, "skill_name": "tauri-dev-quality", "skill_path": "skills/tauri-dev-quality", "timestamp": "2026-10-31T00:00:00Z"}, "runs": [{"configuration": "with_skill", "eval_id": 1, "expectations": [{"evidence": "lldb + manifest-path pr\u00e9sents", "passed": true, "text": "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml"}, {"evidence": "--no-default-features + preLaunchTask pr\u00e9sents", "passed": true, "text": "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build"}, {"evidence": "OK launch.json fid\u00e8le (2 configs)", "passed": true, "text": "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit"}, {"evidence": "vscode.mdx ec113a50 cit\u00e9", "passed": true, "text": "La r\u00e9ponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"}], "notes": [], "result": {"errors": 0, "failed": 0, "pass_rate": 1.0, "passed": 4, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}, {"configuration": "without_skill", "eval_id": 1, "expectations": [{"evidence": "lldb + manifest pr\u00e9sents", "passed": true, "text": "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml"}, {"evidence": "pr\u00e9sents (avec \u00e9carts hors doc non d\u00e9tect\u00e9s)", "passed": true, "text": "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build"}, {"evidence": "OK (script ne couvre pas program-in-lldb)", "passed": true, "text": "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit"}, {"evidence": "aucun pointeur vscode.mdx ec113a50", "passed": false, "text": "La r\u00e9ponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"}], "notes": [], "result": {"errors": 0, "failed": 1, "pass_rate": 0.75, "passed": 3, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}, {"configuration": "with_skill", "eval_id": 2, "expectations": [{"evidence": "mockIPC/mockWindows/clearMocks import\u00e9s", "passed": true, "text": "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks"}, {"evidence": "afterEach clearMocks pr\u00e9sent", "passed": true, "text": "La sortie appelle clearMocks apr\u00e8s chaque run"}, {"evidence": "OK mock fid\u00e8le", "passed": true, "text": "Le script check-dev-quality.py --mock retourne OK sur le fichier produit"}, {"evidence": "mocking.mdx ec113a50 + browser.tauri.mock rappel\u00e9", "passed": true, "text": "La r\u00e9ponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la fronti\u00e8re E2E (browser.tauri.mock)"}], "notes": [], "result": {"errors": 0, "failed": 0, "pass_rate": 1.0, "passed": 4, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}, {"configuration": "without_skill", "eval_id": 2, "expectations": [{"evidence": "vi.mock au lieu de mockIPC/mockWindows", "passed": false, "text": "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks"}, {"evidence": "vi.clearAllMocks au lieu de clearMocks", "passed": false, "text": "La sortie appelle clearMocks apr\u00e8s chaque run"}, {"evidence": "FAIL mocks manquant", "passed": false, "text": "Le script check-dev-quality.py --mock retourne OK sur le fichier produit"}, {"evidence": "sans pointeur mocking.mdx, sans fronti\u00e8re", "passed": false, "text": "La r\u00e9ponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la fronti\u00e8re E2E (browser.tauri.mock)"}], "notes": [], "result": {"errors": 0, "failed": 4, "pass_rate": 0.0, "passed": 0, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}, {"configuration": "with_skill", "eval_id": 3, "expectations": [{"evidence": "appBinaryPath + embedded", "passed": true, "text": "La sortie contient appBinaryPath et driverProvider embedded pour la route service"}, {"evidence": "tauri-driver + tauri:options pr\u00e9sents", "passed": true, "text": "La sortie contient tauri-driver + tauri:options application pour la route manuelle"}, {"evidence": "OK wdio + OK ci", "passed": true, "text": "Les scripts check-dev-quality.py --wdio et --ci retournent OK"}, {"evidence": "manuel Windows/Linux seuls + 5 fichiers WebDriver ec113a50", "passed": true, "text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"}], "notes": [], "result": {"errors": 0, "failed": 0, "pass_rate": 1.0, "passed": 4, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}, {"configuration": "without_skill", "eval_id": 3, "expectations": [{"evidence": "application au lieu de appBinaryPath, pas d'embedded fichier", "passed": false, "text": "La sortie contient appBinaryPath et driverProvider embedded pour la route service"}, {"evidence": "tauri-driver + tauri:options pr\u00e9sents", "passed": true, "text": "La sortie contient tauri-driver + tauri:options application pour la route manuelle"}, {"evidence": "FAIL service + FAIL ci", "passed": false, "text": "Les scripts check-dev-quality.py --wdio et --ci retournent OK"}, {"evidence": "sans pointeurs, fronti\u00e8re macOS non d\u00e9clar\u00e9e", "passed": false, "text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"}], "notes": [], "result": {"errors": 0, "failed": 3, "pass_rate": 0.25, "passed": 1, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "total": 4}, "run_number": 1}], "summary": {"configurations": {"with_skill": {"failed": 0, "pass_rate": 1.0, "passed": 12, "total": 12}, "without_skill": {"failed": 8, "pass_rate": 0.33, "passed": 4, "total": 12}}, "delta_with_minus_without": 0.67}}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

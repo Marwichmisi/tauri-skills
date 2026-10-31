@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-mock-frontend",
+  "prompt": "Écris le test frontend Vitest qui mocke la commande 'add' (12+15=27) avec espion invoke, mocke les fenêtres main/second/third, et clear les mocks après chaque run (shim WebCrypto jsdom inclus). Doit passer scripts/check-dev-quality.py --mock sans API inventée. Si besoin E2E app réelle, renvoyer vers browser.tauri.mock() au lieu de mockIPC.",
+  "assertions": [
+    "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks",
+    "La sortie appelle clearMocks après chaque run",
+    "Le script check-dev-quality.py --mock retourne OK sur le fichier produit",
+    "La réponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la frontière E2E (browser.tauri.mock)"
+  ]
+}

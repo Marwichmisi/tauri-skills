@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-dev-quality",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Mets en place le debug VS Code d'une app Tauri v2 (pnpm, binaire src-tauri/target/debug/mon-app) : launch.json dev (lldb, manifest-path src-tauri/Cargo.toml, --no-default-features, preLaunchTask ui:dev) + prod (--release, ui:build) + tasks.json (ui:dev background yarn dev, ui:build yarn build). Le tout doit passer scripts/check-dev-quality.py --vscode sans valeur inventée.",
+      "expected_output": "launch.json 2 configs lldb + tasks.json ui:dev/ui:build, check --vscode OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient type lldb et manifest-path src-tauri/Cargo.toml",
+        "La sortie contient --no-default-features en dev et preLaunchTask ui:dev/ui:build",
+        "Le script check-dev-quality.py --vscode retourne OK sur le launch.json produit",
+        "La réponse cite develop/Debug/vscode.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Écris le test frontend Vitest qui mocke la commande 'add' (12+15=27) avec espion invoke, mocke les fenêtres main/second/third, et clear les mocks après chaque run (shim WebCrypto jsdom inclus). Doit passer scripts/check-dev-quality.py --mock sans API inventée. Si besoin E2E app réelle, renvoyer vers browser.tauri.mock() au lieu de mockIPC.",
+      "expected_output": "mock-ipc.js avec mockIPC + mockWindows + clearMocks + afterEach, check --mock OK",
+      "files": [],
+      "expectations": [
+        "La sortie importe mockIPC, mockWindows, clearMocks depuis @tauri-apps/api/mocks",
+        "La sortie appelle clearMocks après chaque run",
+        "Le script check-dev-quality.py --mock retourne OK sur le fichier produit",
+        "La réponse cite develop/Tests/mocking.mdx commit ec113a50 et rappelle la frontière E2E (browser.tauri.mock)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Mets en place les tests E2E WebDriver d'une app Tauri v2 (binaire src-tauri/target/release/my-tauri-app) : config service embarquée (tauri + appBinaryPath + embedded) + variante manuelle Windows/Linux (tauri-driver spawn, tauri:options application, 127.0.0.1:4444) + CI (tauri-driver, webkit2gtk-driver/xvfb, msedgedriver-tool, xvfb-run). Doit passer scripts/check-dev-quality.py --wdio et --ci. Déclarer que le manuel ne couvre pas macOS.",
+      "expected_output": "wdio service + wdio manuel + webdriver.yml, checks --wdio et --ci OK, manuel Windows/Linux seul",
+      "files": [],
+      "expectations": [
+        "La sortie contient appBinaryPath et driverProvider embedded pour la route service",
+        "La sortie contient tauri-driver + tauri:options application pour la route manuelle",
+        "Les scripts check-dev-quality.py --wdio et --ci retournent OK",
+        "La réponse déclare la frontière manuel Windows/Linux seuls et cite develop/Tests/WebDriver/* commit ec113a50"
+      ]
+    }
+  ]
+}
