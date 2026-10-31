@@ -1,6 +1,6 @@
 ---
 name: tauri-security-capabilities
-description: Enforce Tauri v2 capabilities, permissions and scopes (CSP, asset-protocol, lifecycle). Use me whenever the agent touches a permission, a capability file, a scope, or a security config — I own the doctrine, plugin fiches only refer to me and never duplicate permissions.
+description: Enforce Tauri v2 capabilities, permissions and scopes (CSP, asset-protocol, lifecycle). Use me whenever the agent touches a permission, a capability file, a scope, or a security config — I own the doctrine, plugin fiches in tauri-plugins-catalogue only refer to me and never duplicate permissions.
 ---
 
 # Tauri Security Capabilities
