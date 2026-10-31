@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient tauri-apps/tauri-action@v1 avec matrix et tag app-v__VERSION__",
+      "passed": true,
+      "evidence": "publish.yml avec tauri-action, matrix 3 OS, tag app-v*"
+    },
+    {
+      "text": "La sortie contient TAURI_SIGNING_PRIVATE_KEY + WINDOWS_CERTIFICATE + APPLE_CERTIFICATE sans var inventée",
+      "passed": false,
+      "evidence": "signing.env contient KEYCHAIN_PASSWORD inventée (FAIL variable de signature inventée)"
+    },
+    {
+      "text": "Le script check-distribution.py --sign retourne OK sur le snippet produit",
+      "passed": false,
+      "evidence": "FAIL signing.env : variable inventée KEYCHAIN_PASSWORD, exit 1"
+    },
+    {
+      "text": "La réponse cite distribute/Pipelines/github.mdx et distribute/Sign/windows.mdx commit ec113a50",
+      "passed": false,
+      "evidence": "answer.md sans ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 3,
+    "total": 4,
+    "pass_rate": 0.25
+  }
+}

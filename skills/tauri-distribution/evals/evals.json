@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-distribution",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Configure l'updater Tauri v2 signé : tauri.conf.json avec bundle.createUpdaterArtifacts=true, plugins.updater.pubkey (contenu clé, jamais un chemin), endpoints https avec {{target}}/{{arch}}/{{current_version}}, installMode passive sur Windows. Valide avec scripts/check-distribution.py --updater sans inventer de variable.",
+      "expected_output": "tauri.conf updater valide (pubkey contenu, endpoints https dynamiques, createUpdaterArtifacts true, installMode passive), check --updater OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient createUpdaterArtifacts true et plugins.updater.pubkey non-chemin",
+        "La sortie liste un endpoint https avec {{target}}/{{arch}}/{{current_version}}",
+        "Le script check-distribution.py --updater retourne OK sur le fichier produit",
+        "La réponse cite plugin/updater.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Prépare la distribution desktop : Windows MSI+NSIS signé (webviewInstallMode embedBootstrapper) et macOS app+dmg (bundle app --target universal-apple-darwin), sans créer un skill par OS. Choisis les bundle targets documentés et valide avec scripts/check-distribution.py --bundle.",
+      "expected_output": "Bundle targets documentés (msi/nsis + app/dmg), webviewInstallMode embedBootstrapper, sous-routage OS via le manifesto unique, check --bundle OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient les targets msi/nsis côté Windows et app/dmg côté macOS sans skill par OS",
+        "La sortie contient webviewInstallMode embedBootstrapper pour le MSI",
+        "Le script check-distribution.py --bundle retourne OK sur les artefacts produits",
+        "La réponse cite distribute/windows-installer.mdx et distribute/dmg.mdx commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Mets en place le pipeline release GitHub (tauri-action matrix macos/ubuntu/windows, tag app-v__VERSION__) avec signature : TAURI_SIGNING_PRIVATE_KEY pour l'updater, WINDOWS_CERTIFICATE côté Windows, APPLE_CERTIFICATE côté macOS. Valide les vars avec scripts/check-distribution.py --sign et renvoie vers les stores si besoin.",
+      "expected_output": "publish.yml tauri-action + secrets signature documentés, check --sign OK, renvoi stores nommé",
+      "files": [],
+      "expectations": [
+        "La sortie contient tauri-apps/tauri-action@v1 avec matrix et tag app-v__VERSION__",
+        "La sortie contient TAURI_SIGNING_PRIVATE_KEY + WINDOWS_CERTIFICATE + APPLE_CERTIFICATE sans var inventée",
+        "Le script check-distribution.py --sign retourne OK sur le snippet produit",
+        "La réponse cite distribute/Pipelines/github.mdx et distribute/Sign/windows.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

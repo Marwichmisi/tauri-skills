@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient createUpdaterArtifacts true et plugins.updater.pubkey non-chemin",
+      "passed": true,
+      "evidence": "tauri.conf.json: createUpdaterArtifacts true, pubkey dW50... (check OK)"
+    },
+    {
+      "text": "La sortie liste un endpoint https avec {{target}}/{{arch}}/{{current_version}}",
+      "passed": true,
+      "evidence": "endpoint https avec les 3 vars officielles"
+    },
+    {
+      "text": "Le script check-distribution.py --updater retourne OK sur le fichier produit",
+      "passed": false,
+      "evidence": "check --updater passe mais installMode placé à bundle.windows.nsis.installMode au lieu de plugins.updater.windows.installMode (doc) — localisation inventée"
+    },
+    {
+      "text": "La réponse cite plugin/updater.mdx commit ec113a50 comme source",
+      "passed": false,
+      "evidence": "answer.md sans ec113a50 ni plugin/updater.mdx"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 2,
+    "total": 4,
+    "pass_rate": 0.5
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient les targets msi/nsis côté Windows et app/dmg côté macOS sans skill par OS",
+      "passed": true,
+      "evidence": "answer.md contient targets [msi,nsis] + app/dmg et note single config, mais bundle.json wrappe sous tauri_bundle_config (forme inventée)"
+    },
+    {
+      "text": "La sortie contient webviewInstallMode embedBootstrapper pour le MSI",
+      "passed": true,
+      "evidence": "answer.md: webviewInstallMode embedBootstrapper présent"
+    },
+    {
+      "text": "Le script check-distribution.py --bundle retourne OK sur les artefacts produits",
+      "passed": false,
+      "evidence": "FAIL bundle.json : aucun bundle target (wrapper tauri_bundle_config au lieu de bundle.targets), exit 1"
+    },
+    {
+      "text": "La réponse cite distribute/windows-installer.mdx et distribute/dmg.mdx commit ec113a50",
+      "passed": false,
+      "evidence": "answer.md sans ec113a50 ni pointeur doc"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 2,
+    "total": 4,
+    "pass_rate": 0.5
+  }
+}

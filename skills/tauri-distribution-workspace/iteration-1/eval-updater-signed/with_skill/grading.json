@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient createUpdaterArtifacts true et plugins.updater.pubkey non-chemin",
+      "passed": true,
+      "evidence": "tauri.conf.json: createUpdaterArtifacts true, pubkey dW50cnVzdCBjb21tZW50OiBzaWduIHdpdGggdGF1cmkgdGVzdGtleQ== ; check OK updater pubkey + 1 endpoint https"
+    },
+    {
+      "text": "La sortie liste un endpoint https avec {{target}}/{{arch}}/{{current_version}}",
+      "passed": true,
+      "evidence": "endpoint https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}} dans tauri.conf.json"
+    },
+    {
+      "text": "Le script check-distribution.py --updater retourne OK sur le fichier produit",
+      "passed": true,
+      "evidence": "OK ... updater pubkey + 1 endpoint(s) https, exit 0"
+    },
+    {
+      "text": "La réponse cite plugin/updater.mdx commit ec113a50 comme source",
+      "passed": true,
+      "evidence": "answer.md cite plugin/updater.mdx + ec113a50 x2"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

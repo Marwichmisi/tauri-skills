@@ -1,0 +1,1 @@
+{"eval_id": 2, "eval_name": "bundle-desktop", "prompt": "Prépare la distribution desktop : Windows MSI+NSIS signé (webviewInstallMode embedBootstrapper) et macOS app+dmg (bundle app --target universal-apple-darwin), sans créer un skill par OS. Choisis les bundle targets documentés et valide avec scripts/check-distribution.py --bundle.", "assertions": []}

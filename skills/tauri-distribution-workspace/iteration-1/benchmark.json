@@ -1,0 +1,294 @@
+{
+  "metadata": {
+    "skill_name": "tauri-distribution",
+    "timestamp": "2026-10-31",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "updater-signed",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient createUpdaterArtifacts true et plugins.updater.pubkey non-chemin",
+          "passed": true,
+          "evidence": "tauri.conf.json: createUpdaterArtifacts true, pubkey dW50cnVzdCBjb21tZW50OiBzaWduIHdpdGggdGF1cmkgdGVzdGtleQ== ; check OK updater pubkey + 1 endpoint https"
+        },
+        {
+          "text": "La sortie liste un endpoint https avec {{target}}/{{arch}}/{{current_version}}",
+          "passed": true,
+          "evidence": "endpoint https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}} dans tauri.conf.json"
+        },
+        {
+          "text": "Le script check-distribution.py --updater retourne OK sur le fichier produit",
+          "passed": true,
+          "evidence": "OK ... updater pubkey + 1 endpoint(s) https, exit 0"
+        },
+        {
+          "text": "La réponse cite plugin/updater.mdx commit ec113a50 comme source",
+          "passed": true,
+          "evidence": "answer.md cite plugin/updater.mdx + ec113a50 x2"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "updater-signed",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 2,
+        "failed": 2,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient createUpdaterArtifacts true et plugins.updater.pubkey non-chemin",
+          "passed": true,
+          "evidence": "tauri.conf.json: createUpdaterArtifacts true, pubkey dW50... (check OK)"
+        },
+        {
+          "text": "La sortie liste un endpoint https avec {{target}}/{{arch}}/{{current_version}}",
+          "passed": true,
+          "evidence": "endpoint https avec les 3 vars officielles"
+        },
+        {
+          "text": "Le script check-distribution.py --updater retourne OK sur le fichier produit",
+          "passed": false,
+          "evidence": "check --updater passe mais installMode placé à bundle.windows.nsis.installMode au lieu de plugins.updater.windows.installMode (doc) — localisation inventée"
+        },
+        {
+          "text": "La réponse cite plugin/updater.mdx commit ec113a50 comme source",
+          "passed": false,
+          "evidence": "answer.md sans ec113a50 ni plugin/updater.mdx"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "bundle-desktop",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient les targets msi/nsis côté Windows et app/dmg côté macOS sans skill par OS",
+          "passed": true,
+          "evidence": "bundle.json targets [msi,nsis,app,dmg], routage manifesto unique"
+        },
+        {
+          "text": "La sortie contient webviewInstallMode embedBootstrapper pour le MSI",
+          "passed": true,
+          "evidence": "bundle.windows.webviewInstallMode embedBootstrapper dans bundle.json + answer"
+        },
+        {
+          "text": "Le script check-distribution.py --bundle retourne OK sur les artefacts produits",
+          "passed": true,
+          "evidence": "OK targets=msi,nsis,app,dmg, exit 0"
+        },
+        {
+          "text": "La réponse cite distribute/windows-installer.mdx et distribute/dmg.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "answer.md cite windows-installer.mdx + dmg.mdx + ec113a50 x5"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "bundle-desktop",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 2,
+        "failed": 2,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient les targets msi/nsis côté Windows et app/dmg côté macOS sans skill par OS",
+          "passed": true,
+          "evidence": "answer.md contient targets [msi,nsis] + app/dmg et note single config, mais bundle.json wrappe sous tauri_bundle_config (forme inventée)"
+        },
+        {
+          "text": "La sortie contient webviewInstallMode embedBootstrapper pour le MSI",
+          "passed": true,
+          "evidence": "answer.md: webviewInstallMode embedBootstrapper présent"
+        },
+        {
+          "text": "Le script check-distribution.py --bundle retourne OK sur les artefacts produits",
+          "passed": false,
+          "evidence": "FAIL bundle.json : aucun bundle target (wrapper tauri_bundle_config au lieu de bundle.targets), exit 1"
+        },
+        {
+          "text": "La réponse cite distribute/windows-installer.mdx et distribute/dmg.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "answer.md sans ec113a50 ni pointeur doc"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pipeline-sign",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient tauri-apps/tauri-action@v1 avec matrix et tag app-v__VERSION__",
+          "passed": true,
+          "evidence": "publish.yml tauri-action@v1, matrix macos/ubuntu/windows, tagName app-v__VERSION__"
+        },
+        {
+          "text": "La sortie contient TAURI_SIGNING_PRIVATE_KEY + WINDOWS_CERTIFICATE + APPLE_CERTIFICATE sans var inventée",
+          "passed": true,
+          "evidence": "OK signing.env vars=TAURI_SIGNING_PRIVATE_KEY,...,WINDOWS_CERTIFICATE... (7 vars allowlist)"
+        },
+        {
+          "text": "Le script check-distribution.py --sign retourne OK sur le snippet produit",
+          "passed": true,
+          "evidence": "OK signing.env + OK publish.yml, exit 0"
+        },
+        {
+          "text": "La réponse cite distribute/Pipelines/github.mdx et distribute/Sign/windows.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "answer.md cite Pipelines/github.mdx + Sign/windows.mdx + ec113a50"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pipeline-sign",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.25,
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient tauri-apps/tauri-action@v1 avec matrix et tag app-v__VERSION__",
+          "passed": true,
+          "evidence": "publish.yml avec tauri-action, matrix 3 OS, tag app-v*"
+        },
+        {
+          "text": "La sortie contient TAURI_SIGNING_PRIVATE_KEY + WINDOWS_CERTIFICATE + APPLE_CERTIFICATE sans var inventée",
+          "passed": false,
+          "evidence": "signing.env contient KEYCHAIN_PASSWORD inventée (FAIL variable de signature inventée)"
+        },
+        {
+          "text": "Le script check-distribution.py --sign retourne OK sur le snippet produit",
+          "passed": false,
+          "evidence": "FAIL signing.env : variable inventée KEYCHAIN_PASSWORD, exit 1"
+        },
+        {
+          "text": "La réponse cite distribute/Pipelines/github.mdx et distribute/Sign/windows.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "answer.md sans ec113a50"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0,
+        "stddev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "tokens": {
+        "mean": 0,
+        "stddev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.4166666666666667,
+        "stddev": 0.11785113019775792,
+        "min": 0.25,
+        "max": 0.5
+      },
+      "time_seconds": {
+        "mean": 0,
+        "stddev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "tokens": {
+        "mean": 0,
+        "stddev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.58",
+      "time_seconds": "+0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "Eval updater discriminant sur installMode path + sources.",
+    "Eval bundle discriminant sur forme bundle.targets + sources (baseline 2/4 contenu ok, artefact KO).",
+    "Eval pipeline discriminant : KEYCHAIN_PASSWORD inventée + sources manquantes (baseline 1/4)."
+  ]
+}

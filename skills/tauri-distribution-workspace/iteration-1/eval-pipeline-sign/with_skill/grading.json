@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient tauri-apps/tauri-action@v1 avec matrix et tag app-v__VERSION__",
+      "passed": true,
+      "evidence": "publish.yml tauri-action@v1, matrix macos/ubuntu/windows, tagName app-v__VERSION__"
+    },
+    {
+      "text": "La sortie contient TAURI_SIGNING_PRIVATE_KEY + WINDOWS_CERTIFICATE + APPLE_CERTIFICATE sans var inventée",
+      "passed": true,
+      "evidence": "OK signing.env vars=TAURI_SIGNING_PRIVATE_KEY,...,WINDOWS_CERTIFICATE... (7 vars allowlist)"
+    },
+    {
+      "text": "Le script check-distribution.py --sign retourne OK sur le snippet produit",
+      "passed": true,
+      "evidence": "OK signing.env + OK publish.yml, exit 0"
+    },
+    {
+      "text": "La réponse cite distribute/Pipelines/github.mdx et distribute/Sign/windows.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "answer.md cite Pipelines/github.mdx + Sign/windows.mdx + ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}
