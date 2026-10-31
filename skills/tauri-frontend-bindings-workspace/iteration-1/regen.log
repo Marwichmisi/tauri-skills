@@ -1,0 +1,12 @@
+Regénération JS avant écriture — tauri-frontend-bindings (pin tauri-docs ec113a50)
+Date: 2026-10-31
+- git clone --filter=blob:none --depth 1 --sparse https://github.com/tauri-apps/tauri.git /tmp/opencode/fb-regen/tauri-src
+- git -C /tmp/opencode/fb-regen/tauri-src sparse-checkout set packages/api/src
+- git -C /tmp/opencode/fb-regen/tauri-src fetch --depth 1 origin 37b3be66513ac613b521baf792b6afc94b38bc8d
+- git -C /tmp/opencode/fb-regen/tauri-src checkout 37b3be6
+- git clone --filter=blob:none --depth 1 --sparse https://github.com/tauri-apps/plugins-workspace.git /tmp/opencode/fb-regen/plugins-src
+- sparse-checkout add plugins/<27 noms>/guest-js (voir PLUGIN_MODULES)
+- git -C /tmp/opencode/fb-regen/plugins-src checkout df59420
+Vérifié:
+37b3be66513ac613b521baf792b6afc94b38bc8d
+df594206ce03f67e25da04283dea023815a45058

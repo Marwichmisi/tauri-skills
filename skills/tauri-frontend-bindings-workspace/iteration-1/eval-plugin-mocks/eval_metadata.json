@@ -1,0 +1,1 @@
+{"eval_id": 3, "eval_name": "plugin-mocks", "prompt": "Ouvre un dialogue fichier (plugin-dialog open + filtre txt) puis lis-le (plugin-fs readTextFile), avec test Vitest mockIPC/clearMocks. Rappelle la frontière scope fs vers tauri-security-capabilities et withGlobalTauri vers tauri-start. Valide avec le check."}

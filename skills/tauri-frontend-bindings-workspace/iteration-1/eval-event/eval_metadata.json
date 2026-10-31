@@ -1,0 +1,1 @@
+{"eval_id": 2, "eval_name": "event", "prompt": "Écoute la destruction d'une fenêtre (TauriEvent.WINDOW_DESTROYED) avec cleanup unlisten, puis émet `frontend-loaded` avec payload. Explique quand passer à Channel pour gros volumes. Doit passer le check event sans nom inventé."}

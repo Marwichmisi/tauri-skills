@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-frontend-bindings",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Appelle une commande Rust `download(url: String, on_event: Channel<String>)` depuis le frontend avec `invoke` + `new Channel` + `onmessage`, et donne le pendant Rust avec lien docs.rs. Le tout doit passer scripts/check-frontend-bindings.py sans import inventé.",
+      "expected_output": "JS invoke download + Channel onmessage + Rust Channel docs.rs, check --frontend/--rust OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient invoke('download', { url + onEvent }) + new Channel + onmessage",
+        "La sortie contient tauri::ipc::Channel côté Rust + lien https://docs.rs/tauri/2/tauri/ipc/struct.Channel.html",
+        "Le script check-frontend-bindings.py --frontend/--rust retourne OK sur les artefacts produits",
+        "La réponse cite tauri@37b3be6 packages/api/src/core.ts régénéré + commit ec113a50"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Écoute la destruction d'une fenêtre (TauriEvent.WINDOW_DESTROYED) avec cleanup unlisten, puis émet `frontend-loaded` avec payload. Explique quand passer à Channel pour gros volumes. Doit passer le check event sans nom inventé.",
+      "expected_output": "listen TauriEvent + unlisten + emit frontend-loaded + règle Channel gros volumes, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient listen(TauriEvent.WINDOW_DESTROYED) + unlisten + emit('frontend-loaded')",
+        "La sortie explique que Channel est ordonné/rapide pour gros volumes vs events JSON",
+        "Le script check-frontend-bindings.py --frontend retourne OK et rejette les noms d'event invalides",
+        "La réponse cite tauri@37b3be6 packages/api/src/event.ts régénéré + commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Ouvre un dialogue fichier (plugin-dialog open + filtre txt) puis lis-le (plugin-fs readTextFile), avec test Vitest mockIPC/clearMocks. Rappelle la frontière scope fs vers tauri-security-capabilities et withGlobalTauri vers tauri-start. Valide avec le check.",
+      "expected_output": "Imports plugin-dialog/plugin-fs + mocks Vitest + frontières security/start, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient import @tauri-apps/plugin-dialog open + @tauri-apps/plugin-fs readTextFile",
+        "La sortie contient mockIPC + clearMocks depuis @tauri-apps/api/mocks pour le test",
+        "La sortie déclare les frontières scope fs vers tauri-security-capabilities et withGlobalTauri vers tauri-start",
+        "Le script check-frontend-bindings.py --frontend retourne OK et la réponse cite plugins-workspace@df59420 guest-js + commit ec113a50"
+      ]
+    }
+  ]
+}
