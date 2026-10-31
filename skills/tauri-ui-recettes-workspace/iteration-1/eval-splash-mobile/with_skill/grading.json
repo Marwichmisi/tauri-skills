@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient main visible false + splashscreen url + set_complete close/show + tokio time",
+      "passed": true,
+      "evidence": "tauri.conf.json: main visible false + splashscreen url /splashscreen ; splashscreen.rs: SetupState 2 bools + set_complete close/show + tokio::time sleep, pas std sleep"
+    },
+    {
+      "text": "La sortie contient allow-create-webview-window + WebviewWindow activityName + SceneRequested builder + fileAssociations ext sans point",
+      "passed": true,
+      "evidence": "capability core:webview:allow-create-webview-window + wildcard main-* ; mobile.js WebviewWindow detail activityName DetailActivity ; mobile.rs SceneRequested + WebviewWindowBuilder ; fileAssociations png/jpg ext sans point"
+    },
+    {
+      "text": "La sortie contient invoke opened_urls (cold) + listen opened (warm) + emit opened côté Rust",
+      "passed": true,
+      "evidence": "mobile.js: invoke opened_urls + listen opened ; mobile.rs: OpenedUrls state + opened_urls cmd + emit(\"opened\", urls) ; checks frontend/rust OK"
+    },
+    {
+      "text": "Le script check-ui-recettes.py --config/--frontend/--rust retourne OK et la réponse cite learn/splashscreen.mdx + mobile-multiwindow.mdx + mobile-file-associations.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "OK config windows+fileAssociations + OK frontend + OK rust x2 ; answer.md cite les 3 fichiers + ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

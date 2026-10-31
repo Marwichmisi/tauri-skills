@@ -1,0 +1,26 @@
+{
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "visible": false
+      },
+      {
+        "label": "splashscreen",
+        "url": "/splashscreen"
+      }
+    ]
+  },
+  "bundle": {
+    "fileAssociations": [
+      {
+        "ext": ["png"],
+        "mimeType": "image/png"
+      },
+      {
+        "ext": ["jpg", "jpeg"],
+        "mimeType": "image/jpeg"
+      }
+    ]
+  }
+}

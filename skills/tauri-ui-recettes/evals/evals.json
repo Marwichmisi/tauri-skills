@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-ui-recettes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fenêtre Tauri v2 avec titlebar custom : tauri.conf decorations false, capability core:window:* (default/allow-close/allow-minimize/allow-toggle-maximize/allow-start-dragging), HTML data-tauri-drag-region + CSS app-region drag, JS getCurrentWindow minimize/toggleMaximize/close. Valide avec scripts/check-ui-recettes.py sans inventer de permission.",
+      "expected_output": "Titlebar custom decorations false + capability core:window doc + drag-region + JS getCurrentWindow, check --config/--frontend OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient decorations false + core:window:allow-start-dragging + data-tauri-drag-region",
+        "La sortie contient getCurrentWindow + minimize/toggleMaximize/close appariés",
+        "Le script check-ui-recettes.py --config/--frontend retourne OK sur les artefacts produits",
+        "La réponse cite learn/window-customization.mdx commit ec113a50 et renvoie les permissions vers tauri-security-capabilities"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Menus + tray natifs desktop : Menu.new await using avec items quit/check/separator, setAsAppMenu + get/setText, TrayIcon.new avec menu + menuOnLeftClick, Cargo tray-icon, Rust TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event. Valide avec scripts/check-ui-recettes.py sans leak (await using/close obligatoire).",
+      "expected_output": "Menu await using + tray menu/menuOnLeftClick + Rust builders/events, check --frontend/--rust OK, pas de leak",
+      "files": [],
+      "expectations": [
+        "La sortie contient Menu.new + await using + setAsAppMenu et TrayIcon.new + menuOnLeftClick",
+        "La sortie contient TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event côté Rust",
+        "Le script check-ui-recettes.py retourne OK et rejette Menu sans await using/close",
+        "La réponse cite learn/window-menu.mdx + learn/system-tray.mdx commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Splashscreen + mobile : 2 fenêtres main hidden + splashscreen url, Rust SetupState set_complete close/show + tokio time (pas std sleep), capability allow-create-webview-window + wildcard main-*, WebviewWindow activityName + SceneRequested builder, fileAssociations png/jpg + RunEvent::Opened cold invoke opened_urls + warm listen opened. Valide avec le check.",
+      "expected_output": "Splashscreen main hidden + mobile multiwindow + file associations cold/warm, checks OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient main visible false + splashscreen url + set_complete close/show + tokio time",
+        "La sortie contient allow-create-webview-window + WebviewWindow activityName + SceneRequested builder + fileAssociations ext sans point",
+        "La sortie contient invoke opened_urls (cold) + listen opened (warm) + emit opened côté Rust",
+        "Le script check-ui-recettes.py --config/--frontend/--rust retourne OK et la réponse cite learn/splashscreen.mdx + mobile-multiwindow.mdx + mobile-file-associations.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

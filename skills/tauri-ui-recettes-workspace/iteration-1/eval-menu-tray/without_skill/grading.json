@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient Menu.new + await using + setAsAppMenu et TrayIcon.new + menuOnLeftClick",
+      "passed": true,
+      "evidence": "menu.js/tray.js: Menu.new + await using + setAsAppMenu + TrayIcon.new + menuOnLeftClick true (mais icon string 'icons/32x32.png' hors doc + TrayIcon.getById/setTooltip/setVisible hors doc)"
+    },
+    {
+      "text": "La sortie contient TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event côté Rust",
+      "passed": false,
+      "evidence": "tray.rs contient les builders mais .menu_on_left_click(true) inventé (doc: .show_menu_on_left_click) + PredefinedMenuItem::quit(item Quit capital) fragile ; invention API"
+    },
+    {
+      "text": "Le script check-ui-recettes.py retourne OK et rejette Menu sans await using/close",
+      "passed": false,
+      "evidence": "FAIL tray.rs: API inventée menu_on_left_click (doc: show_menu_on_left_click) — check rejette désormais l'invention ; leak OK (await using présent) mais script FAIL"
+    },
+    {
+      "text": "La réponse cite learn/window-menu.mdx + learn/system-tray.mdx commit ec113a50",
+      "passed": false,
+      "evidence": "answer.md baseline sans lecture doc, aucune citation fichier ni ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 3,
+    "total": 4,
+    "pass_rate": 0.25
+  }
+}

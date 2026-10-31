@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "splash-mobile-demo",
+  "version": "0.1.0",
+  "identifier": "com.example.splashmobile",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Main",
+        "url": "/",
+        "width": 800,
+        "height": 600,
+        "visible": false,
+        "center": true
+      },
+      {
+        "label": "splashscreen",
+        "title": "Loading",
+        "url": "splashscreen.html",
+        "width": 400,
+        "height": 200,
+        "decorations": false,
+        "transparent": true,
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.icns", "icons/icon.ico"],
+    "fileAssociations": [
+      {
+        "ext": ["png"],
+        "name": "PNG Image",
+        "description": "Open PNG images",
+        "mimeType": "image/png",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["jpg", "jpeg"],
+        "name": "JPEG Image",
+        "description": "Open JPG images",
+        "mimeType": "image/jpeg",
+        "role": "Viewer"
+      }
+    ],
+    "android": {
+      "minSdkVersion": 24
+    },
+    "iOS": {
+      "minimumSystemVersion": "13.0"
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["splashmobile"]
+      }
+    }
+  }
+}

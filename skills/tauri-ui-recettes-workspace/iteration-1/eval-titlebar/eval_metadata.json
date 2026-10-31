@@ -1,0 +1,5 @@
+{
+  "eval_id": 1,
+  "eval_name": "titlebar-custom",
+  "prompt": "Fenêtre Tauri v2 avec titlebar custom : tauri.conf decorations false, capability core:window:* (default/allow-close/allow-minimize/allow-toggle-maximize/allow-start-dragging), HTML data-tauri-drag-region + CSS app-region drag, JS getCurrentWindow minimize/toggleMaximize/close. Valide avec scripts/check-ui-recettes.py sans inventer de permission."
+}

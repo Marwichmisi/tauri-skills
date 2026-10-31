@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient Menu.new + await using + setAsAppMenu et TrayIcon.new + menuOnLeftClick",
+      "passed": true,
+      "evidence": "menu.js: Menu.new + await using + setAsAppMenu + get/setText ; tray.js: TrayIcon.new({menu, menuOnLeftClick:true, icon defaultWindowIcon(), action switch Click/DoubleClick/Enter/Move/Leave}) + menu.close()"
+    },
+    {
+      "text": "La sortie contient TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event côté Rust",
+      "passed": true,
+      "evidence": "tray.rs: TrayIconBuilder + MenuBuilder/Menu::with_items/MenuItem::with_id + on_menu_event + on_tray_icon_event + get_webview_window + show_menu_on_left_click ; check rust OK"
+    },
+    {
+      "text": "Le script check-ui-recettes.py retourne OK et rejette Menu sans await using/close",
+      "passed": true,
+      "evidence": "OK menu.js + OK tray.js + OK tray.rs ; contrôle négatif Menu sans await using/close => FAIL menu leak documenté dans answer"
+    },
+    {
+      "text": "La réponse cite learn/window-menu.mdx + learn/system-tray.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "answer.md cite les 2 fichiers + ec113a50 x5 + extraits Explicit Resource Management + menuOnLeftClick/show_menu_on_left_click"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

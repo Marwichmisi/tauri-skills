@@ -1,0 +1,247 @@
+{
+  "metadata": {
+    "skill_name": "tauri-ui-recettes",
+    "timestamp": "2026-10-31",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "titlebar-custom",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient decorations false + core:window:allow-start-dragging + data-tauri-drag-region",
+          "passed": true,
+          "evidence": "answer.md: decorations false (app.windows main), permissions core:window:default/allow-close/allow-minimize/allow-toggle-maximize/allow-start-dragging + HTML <div data-tauri-drag-region> + CSS app-region: drag"
+        },
+        {
+          "text": "La sortie contient getCurrentWindow + minimize/toggleMaximize/close appariés",
+          "passed": true,
+          "evidence": "titlebar.js: getCurrentWindow() + minimize()/toggleMaximize()/close() + variante mousedown/startDragging ; check frontend OK getCurrentWindow"
+        },
+        {
+          "text": "Le script check-ui-recettes.py --config/--frontend retourne OK sur les artefacts produits",
+          "passed": true,
+          "evidence": "OK tauri.conf.json windows ['main'] + OK titlebar.js getCurrentWindow, exit 0"
+        },
+        {
+          "text": "La réponse cite learn/window-customization.mdx commit ec113a50 et renvoie les permissions vers tauri-security-capabilities",
+          "passed": true,
+          "evidence": "answer.md cite learn/window-customization.mdx + ec113a50 + renvoi doctrine tauri-security-capabilities"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "titlebar-custom",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient decorations false + core:window:allow-start-dragging + data-tauri-drag-region",
+          "passed": true,
+          "evidence": "answer.md+tauri.conf.json: decorations false + allow-start-dragging + data-tauri-drag-region (mais capability core:default au lieu de core:window:default — invention partielle)"
+        },
+        {
+          "text": "La sortie contient getCurrentWindow + minimize/toggleMaximize/close appariés",
+          "passed": true,
+          "evidence": "titlebar.js: getCurrentWindow + minimize/toggleMaximize/close"
+        },
+        {
+          "text": "Le script check-ui-recettes.py --config/--frontend retourne OK sur les artefacts produits",
+          "passed": true,
+          "evidence": "check --config OK windows ['main'] + check --frontend OK getCurrentWindow (labels uniques OK)"
+        },
+        {
+          "text": "La réponse cite learn/window-customization.mdx commit ec113a50 et renvoie les permissions vers tauri-security-capabilities",
+          "passed": false,
+          "evidence": "answer.md baseline mémoire, aucune citation learn/window-customization.mdx ni ec113a50"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "menu-tray",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient Menu.new + await using + setAsAppMenu et TrayIcon.new + menuOnLeftClick",
+          "passed": true,
+          "evidence": "menu.js: Menu.new + await using + setAsAppMenu + get/setText ; tray.js: TrayIcon.new({menu, menuOnLeftClick:true, icon defaultWindowIcon(), action switch Click/DoubleClick/Enter/Move/Leave}) + menu.close()"
+        },
+        {
+          "text": "La sortie contient TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event côté Rust",
+          "passed": true,
+          "evidence": "tray.rs: TrayIconBuilder + MenuBuilder/Menu::with_items/MenuItem::with_id + on_menu_event + on_tray_icon_event + get_webview_window + show_menu_on_left_click ; check rust OK"
+        },
+        {
+          "text": "Le script check-ui-recettes.py retourne OK et rejette Menu sans await using/close",
+          "passed": true,
+          "evidence": "OK menu.js + OK tray.js + OK tray.rs ; contrôle négatif Menu sans await using/close => FAIL menu leak documenté dans answer"
+        },
+        {
+          "text": "La réponse cite learn/window-menu.mdx + learn/system-tray.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "answer.md cite les 2 fichiers + ec113a50 x5 + extraits Explicit Resource Management + menuOnLeftClick/show_menu_on_left_click"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "menu-tray",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.25,
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient Menu.new + await using + setAsAppMenu et TrayIcon.new + menuOnLeftClick",
+          "passed": true,
+          "evidence": "menu.js/tray.js: Menu.new + await using + setAsAppMenu + TrayIcon.new + menuOnLeftClick true (mais icon string 'icons/32x32.png' hors doc + TrayIcon.getById/setTooltip/setVisible hors doc)"
+        },
+        {
+          "text": "La sortie contient TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event côté Rust",
+          "passed": false,
+          "evidence": "tray.rs contient les builders mais .menu_on_left_click(true) inventé (doc: .show_menu_on_left_click) + PredefinedMenuItem::quit(item Quit capital) fragile ; invention API"
+        },
+        {
+          "text": "Le script check-ui-recettes.py retourne OK et rejette Menu sans await using/close",
+          "passed": false,
+          "evidence": "FAIL tray.rs: API inventée menu_on_left_click (doc: show_menu_on_left_click) — check rejette désormais l'invention ; leak OK (await using présent) mais script FAIL"
+        },
+        {
+          "text": "La réponse cite learn/window-menu.mdx + learn/system-tray.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "answer.md baseline sans lecture doc, aucune citation fichier ni ec113a50"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "splash-mobile",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient main visible false + splashscreen url + set_complete close/show + tokio time",
+          "passed": true,
+          "evidence": "tauri.conf.json: main visible false + splashscreen url /splashscreen ; splashscreen.rs: SetupState 2 bools + set_complete close/show + tokio::time sleep, pas std sleep"
+        },
+        {
+          "text": "La sortie contient allow-create-webview-window + WebviewWindow activityName + SceneRequested builder + fileAssociations ext sans point",
+          "passed": true,
+          "evidence": "capability core:webview:allow-create-webview-window + wildcard main-* ; mobile.js WebviewWindow detail activityName DetailActivity ; mobile.rs SceneRequested + WebviewWindowBuilder ; fileAssociations png/jpg ext sans point"
+        },
+        {
+          "text": "La sortie contient invoke opened_urls (cold) + listen opened (warm) + emit opened côté Rust",
+          "passed": true,
+          "evidence": "mobile.js: invoke opened_urls + listen opened ; mobile.rs: OpenedUrls state + opened_urls cmd + emit(\"opened\", urls) ; checks frontend/rust OK"
+        },
+        {
+          "text": "Le script check-ui-recettes.py --config/--frontend/--rust retourne OK et la réponse cite learn/splashscreen.mdx + mobile-multiwindow.mdx + mobile-file-associations.mdx commit ec113a50",
+          "passed": true,
+          "evidence": "OK config windows+fileAssociations + OK frontend + OK rust x2 ; answer.md cite les 3 fichiers + ec113a50"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "splash-mobile",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.25,
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "La sortie contient main visible false + splashscreen url + set_complete close/show + tokio time",
+          "passed": true,
+          "evidence": "tauri.conf.json main visible false + splashscreen ; splashscreen.rs SetupState + set_complete close/show + tokio fallback (mais AtomicBool vs 2 bools doc + fallback inventé)"
+        },
+        {
+          "text": "La sortie contient allow-create-webview-window + WebviewWindow activityName + SceneRequested builder + fileAssociations ext sans point",
+          "passed": false,
+          "evidence": "permission inventée core:window:allow-create-webview-window (doc: core:webview:...) + fenêtre second au lieu de detail/main-N ; fileAssociations OK mais capability fausse"
+        },
+        {
+          "text": "La sortie contient invoke opened_urls (cold) + listen opened (warm) + emit opened côté Rust",
+          "passed": false,
+          "evidence": "mobile.js: pas de invoke opened_urls ni listen opened (handleOpenedUrls générique) ; mobile.rs: RunEvent::Opened sans emit(\"opened\") => check FAIL emit"
+        },
+        {
+          "text": "Le script check-ui-recettes.py --config/--frontend/--rust retourne OK et la réponse cite learn/splashscreen.mdx + mobile-multiwindow.mdx + mobile-file-associations.mdx commit ec113a50",
+          "passed": false,
+          "evidence": "check --rust mobile.rs FAIL (sans emit) ; answer.md sans citation fichier ni ec113a50"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "summary": {
+    "with_skill_pass_rate": 1.0,
+    "without_skill_pass_rate": 0.4166666666666667,
+    "delta": 0.5833333333333333
+  }
+}

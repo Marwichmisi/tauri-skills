@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient decorations false + core:window:allow-start-dragging + data-tauri-drag-region",
+      "passed": true,
+      "evidence": "answer.md: decorations false (app.windows main), permissions core:window:default/allow-close/allow-minimize/allow-toggle-maximize/allow-start-dragging + HTML <div data-tauri-drag-region> + CSS app-region: drag"
+    },
+    {
+      "text": "La sortie contient getCurrentWindow + minimize/toggleMaximize/close appariés",
+      "passed": true,
+      "evidence": "titlebar.js: getCurrentWindow() + minimize()/toggleMaximize()/close() + variante mousedown/startDragging ; check frontend OK getCurrentWindow"
+    },
+    {
+      "text": "Le script check-ui-recettes.py --config/--frontend retourne OK sur les artefacts produits",
+      "passed": true,
+      "evidence": "OK tauri.conf.json windows ['main'] + OK titlebar.js getCurrentWindow, exit 0"
+    },
+    {
+      "text": "La réponse cite learn/window-customization.mdx commit ec113a50 et renvoie les permissions vers tauri-security-capabilities",
+      "passed": true,
+      "evidence": "answer.md cite learn/window-customization.mdx + ec113a50 + renvoi doctrine tauri-security-capabilities"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

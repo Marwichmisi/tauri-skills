@@ -1,0 +1,5 @@
+{
+  "eval_id": 2,
+  "eval_name": "menu-tray",
+  "prompt": "Menus + tray natifs desktop : Menu.new await using avec items quit/check/separator, setAsAppMenu + get/setText, TrayIcon.new avec menu + menuOnLeftClick, Cargo tray-icon, Rust TrayIconBuilder/MenuBuilder + on_menu_event/on_tray_icon_event. Valide avec scripts/check-ui-recettes.py sans leak (await using/close obligatoire)."
+}

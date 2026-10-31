@@ -1,0 +1,5 @@
+{
+  "eval_id": 3,
+  "eval_name": "splash-mobile",
+  "prompt": "Splashscreen + mobile : 2 fenêtres main hidden + splashscreen url, Rust SetupState set_complete close/show + tokio time (pas std sleep), capability allow-create-webview-window + wildcard main-*, WebviewWindow activityName + SceneRequested builder, fileAssociations png/jpg + RunEvent::Opened cold invoke opened_urls + warm listen opened. Valide avec le check."
+}
