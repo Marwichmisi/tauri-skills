@@ -1,0 +1,42 @@
+{
+  "skill_name": "tauri-migrate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Migre mon app Tauri v1 vers v2 : donne la tauri.conf.json migrée (package->top-level, tauri->app, distDir/devPath renommés, allowlist supprimée vers capabilities/), le bloc [lib] Cargo pour le mobile, et les remplacements JS (api/tauri->core, api/fs->plugin-fs, api/window->webviewWindow). Le tout doit passer scripts/check-migrate.py sans valeur inventée, en rappelant que la commande migrate ne remplace pas le guide.",
+      "expected_output": "tauri.conf v2 + Cargo [lib] staticlib/cdylib/rlib + JS core/plugins, check OK, rappel danger doc",
+      "files": [],
+      "expectations": [
+        "La sortie ne contient plus package ni tauri.allowlist ni distDir/devPath, mais app + frontendDist + devUrl",
+        "La sortie contient le bloc [lib] staticlib/cdylib/rlib et tauri version 2",
+        "La sortie remplace api/tauri par api/core et api/window par api/webviewWindow sans import inventé",
+        "Le script check-migrate.py retourne OK sur les artefacts produits",
+        "La réponse cite start/migrate/from-tauri-1.mdx commit ec113a50 et rappelle que migrate ne remplace pas le guide"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Migre ma bêta Tauri 2.0 vers stable : capability avec core:default (au lieu des 8 permissions nues), et vite.config avec TAURI_DEV_HOST (sans internal-ip ni TAURI_ENV_PLATFORM). Doit passer scripts/check-migrate.py --capability --vite-config.",
+      "expected_output": "capability core:default + vite TAURI_DEV_HOST, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient core:default et aucune permission nue path:/event:/window: sans core:",
+        "La sortie contient TAURI_DEV_HOST et ni internal-ip ni TAURI_ENV_PLATFORM pour l'hôte",
+        "Le script check-migrate.py --capability --vite-config retourne OK sur les fichiers produits",
+        "La réponse cite start/migrate/from-tauri-2-beta.mdx commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Synchronise mes dépendances Tauri (npm + Cargo) : donne les commandes pnpm/cargo et la règle de versions (api/tauri même mineure, plugins npm==cargo au patch près, ex plugin-fs 2.2.1). Si c'est du ressort de tauri-config-cli-reference (schéma complet), renvoie vers lui au lieu de dupliquer.",
+      "expected_output": "commandes update + règle sync + frontière config-cli, check OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient pnpm update @tauri-apps/cli @tauri-apps/api --latest et cd src-tauri + cargo update",
+        "La sortie mentionne la règle même mineure api/tauri et versions exactes plugin npm==cargo",
+        "Le script check-migrate.py --package-json --cargo-toml retourne OK sur les fichiers produits",
+        "La réponse cite develop/updating-dependencies.mdx commit ec113a50 et déclare la frontière vers tauri-config-cli-reference"
+      ]
+    }
+  ]
+}

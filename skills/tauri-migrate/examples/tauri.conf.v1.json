@@ -1,0 +1,36 @@
+{
+  "package": {
+    "productName": "my-app",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "fs": {
+        "readFile": true
+      },
+      "protocol": {
+        "assetScope": ["$APPCACHE/*"]
+      }
+    },
+    "windows": [
+      {
+        "label": "main",
+        "fileDropEnabled": true
+      }
+    ],
+    "systemTray": {},
+    "updater": {
+      "active": true,
+      "dialog": true
+    },
+    "bundle": {
+      "identifier": "com.example.app"
+    },
+    "cli": {}
+  },
+  "build": {
+    "distDir": "../dist",
+    "devPath": "http://localhost:5173",
+    "withGlobalTauri": true
+  }
+}
