@@ -1,0 +1,8 @@
+"$schema" = "schemas/schema.json"
+
+[[permission]]
+identifier = "allow-spawn-node"
+description = "This scope permits spawning the `node` binary."
+
+[[permission.scope.allow]]
+binary = "node"

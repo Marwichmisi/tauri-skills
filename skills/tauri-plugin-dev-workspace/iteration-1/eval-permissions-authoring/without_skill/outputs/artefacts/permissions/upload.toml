@@ -1,0 +1,11 @@
+"$schema" = "schemas/schema.json"
+
+[[permission]]
+identifier = "allow-upload"
+description = "Enables the upload command."
+commands.allow = ["upload"]
+
+[[permission]]
+identifier = "deny-upload"
+description = "Denies the upload command."
+commands.deny = ["upload"]

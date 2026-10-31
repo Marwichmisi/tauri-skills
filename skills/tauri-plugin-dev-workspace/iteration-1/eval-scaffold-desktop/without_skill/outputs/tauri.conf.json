@@ -1,0 +1,21 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "productName": "my-app",
+  "version": "0.1.0",
+  "identifier": "com.example.my-app",
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [{ "label": "main", "url": "index.html" }],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "identifier": "com.example.my-app"
+  },
+  "plugins": {
+    "my-plugin": {
+      "timeout": 30
+    }
+  }
+}

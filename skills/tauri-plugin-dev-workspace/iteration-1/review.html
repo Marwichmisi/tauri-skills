@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "tauri-plugin-dev", "runs": [{"id": "eval-scaffold-desktop-with_skill", "prompt": "Scaffold un plugin desktop `my-plugin` conforme doc : crate tauri-plugin-my-plugin, structure src/ (commands.rs upload + desktop.rs/mobile.rs/lib.rs + Builder::new(\"my-plugin\") + invoke_handler upload + setup), guest-js invoke('plugin:my-plugin|upload') avec Channel, Cargo platforms.support (full desktop, android partial avec notes, ios none), tauri.conf plugins.my-plugin timeout 30. Valide avec scripts/check-plugin-dev.py (--identifier/--cargo/--invoke). Le squelette doit suivre les r\u00e8gles document\u00e9es de bout en bout.", "eval_id": 1, "outputs": [{"name": "Cargo.plugin.toml", "type": "text", "content": "[package]\nname = \"tauri-plugin-my-plugin\"\nversion = \"0.1.0\"\n\n[package.metadata.platforms.support]\nwindows = { level = \"full\" }\nlinux = { level = \"full\" }\nmacos = { level = \"full\" }\nandroid = { level = \"partial\", notes = \"Access is restricted to the Application folder by default\" }\nios = { level = \"none\" }\n"}, {"name": "answer.md", "type": "text", "content": "# Scaffold plugin desktop `my-plugin` \u2014 conforme doc (avec skill)\n\n## Sources (pointeurs exig\u00e9s)\n- Fichier : `tauri-docs/src/content/docs/develop/Plugins/index.mdx`\n- Commit : `ec113a50`\n- Titre (frontmatter) : `Plugin Development`\n- Skill appliqu\u00e9 : `skills/tauri-plugin-dev` \u2192 `references/plugin-basics.md` \u2192 `examples/Cargo.plugin.toml`, `examples/lib-plugin.rs`, `examples/commands-upload.rs`, `examples/guest-js-upload.js`, `examples/tauri-conf-plugin.json` \u2192 `scripts/check-plugin-dev.py --identifier/--cargo/--invoke`\n\n> Extraits doc : copies fid\u00e8les via `references/plugin-basics.md`. API Rust/Kotlin/Swift link\u00e9es (`docs.rs`), jamais copi\u00e9es. Aucun identifiant invent\u00e9 : seuls `my-plugin`, `upload`, plateformes `windows/linux/macos/android/ios` + `full/partial/none`.\n\n## 1. Nommage + arborescence\n- Crate : `tauri-plugin-my-plugin` (r\u00e8gle doc : `By default Tauri prefixes your plugin crate with tauri-plugin-` ; crate `tauri-plugin-{plugin-name}`).\n- Bootstrap : `npx @tauri-apps/cli plugin new my-plugin` (`plugin new` ; `--no-api` si pas de NPM ; `--android`/`--ios` pour mobile \u2014 non utilis\u00e9s ici, scaffold desktop).\n- Arborescence doc (index.mdx) :\n  - `tauri-plugin-my-plugin/src/commands.rs` \u2014 `Defines the commands the webview can use`\n  - `src/desktop.rs` \u2014 `Desktop implementation`\n  - `src/mobile.rs` \u2014 `Mobile implementation`\n  - `src/lib.rs` \u2014 `Re-exports appropriate implementation, setup state...`\n  - `guest-js/` + `Cargo.toml` + `tauri.conf.json` (`plugins.my-plugin`)\n- Identifier `my-plugin` valide : lowercase ASCII + tiret non leading/trailing (tableau Identifier Rules : `sqlite` oui, `sqlite-store` oui, `sqlite_store` non, `-sqlite` non).\n\n## 2. `src/commands.rs` \u2014 commande `upload` (snake_case, `Channel`)\nCopie fid\u00e8le de `examples/commands-upload.rs` (lui-m\u00eame extrait `src/commands.rs` de index.mdx) :\n\n```rust\nuse tauri::{command, ipc::Channel, AppHandle, Runtime, Window};\n\n#[command]\nasync fn upload<R: Runtime>(app: AppHandle<R>, window: Window<R>, on_progress: Channel, url: String) {\n    // implement command logic here\n    on_progress.send(100).unwrap();\n}\n```\n\nDoc : `Commande (src/commands.rs, AppHandle/Window par injection, Channel, args comme une commande app)`. D\u00e9tail IPC (`Channel`, `State`) : voir skill fr\u00e8re `tauri-ipc-bridge`.\n\n## 3. `src/lib.rs` \u2014 `Builder::new(\"my-plugin\")` + `invoke_handler` + `setup`\nCopie fid\u00e8le de `examples/lib-plugin.rs` (extrait `src/lib.rs` Builder/config + enregistrement handler de index.mdx) :\n\n```rust\nuse tauri::plugin::Builder;\n\npub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {\n    Builder::new(\"my-plugin\")\n        .invoke_handler(tauri::generate_handler![crate::commands::upload])\n        .setup(|app, api| {\n            // Register state, spawn background tasks here (setup lifecycle).\n            // Mobile plugins are registered here in generated template.\n            Ok(())\n        })\n        .build()\n}\n```\n\nAppariement exig\u00e9 : `Builder::new(\"my-plugin\")` + `.invoke_handler(tauri::generate_handler![crate::commands::upload])` + `setup` (lifecycle : `setup: Plugin is being initialized \u2014 Register mobile plugins, manage state, run background tasks`). Config `timeout` pars\u00e9e au runtime via `Builder::<R, Config>::new(\"<plugin-name>\")` + `api.config().timeout` (voir \u00a75).\n\n## 4. `src/desktop.rs` / `src/mobile.rs`\nDoc : `The plugin APIs defined in the project's desktop.rs and mobile.rs are exported to the user as a struct with the same name as the plugin (in pascal case) [...] through the extension trait defined in the plugin.`\n\n```rust\n// desktop.rs\npub struct MyPlugin<R: tauri::Runtime>(std::marker::PhantomData<R>);\nimpl<R: tauri::Runtime> MyPlugin<R> {\n    pub fn upload(&self, _url: String) { /* desktop impl of `upload` */ }\n}\n```\n\n`mobile.rs` : stub fallback desktop-first (m\u00eame struct) ; ajout mobile r\u00e9el via `plugin android add` / `plugin ios add` (wording index.mdx ; le guide mobile dit `plugin android init` / `plugin ios init` \u2014 les deux formes cit\u00e9es telles quelles). Mobile (`openCamera`, `run_mobile_plugin`, `addPluginListener`) : hors p\u00e9rim\u00e8tre de ce scaffold, voir `references/mobile.md`.\n\n## 5. `guest-js` \u2014 `invoke('plugin:my-plugin|upload')` avec `Channel`\nCopie fid\u00e8le de `examples/guest-js-upload.js` (extrait `webview-src/index.ts` de index.mdx) :\n\n```js\nimport { invoke, Channel } from '@tauri-apps/api/core'\n\nexport async function upload(url: string, onProgressHandler: (progress: number) => void): Promise<void> {\n  const onProgress = new Channel<number>()\n  onProgress.onmessage = onProgressHandler\n  await invoke('plugin:my-plugin|upload', { url, onProgress })\n}\n```\n\nR\u00e8gle : `invoke('plugin:<plugin-name>|upload')`, build TS avant test.\n\n## 6. `Cargo.toml` \u2014 `platforms.support`\nCopie fid\u00e8le de `examples/Cargo.plugin.toml` (bloc `Cargo.toml` de index.mdx) :\n\n```toml\n[package]\nname = \"tauri-plugin-my-plugin\"\nversion = \"0.1.0\"\n\n[package.metadata.platforms.support]\nwindows = { level = \"full\" }\nlinux = { level = \"full\" }\nmacos = { level = \"full\" }\nandroid = { level = \"partial\", notes = \"Access is restricted to the Application folder by default\" }\nios = { level = \"none\" }\n```\n\nR\u00e8gle : chaque cl\u00e9 = plateforme (`windows`, `linux`, `macos`, `android`, `ios`), `level` requis (`full`/`partial`/`none`), `notes` Markdown optionnel.\n\n## 7. `tauri.conf.json` \u2014 `plugins.my-plugin.timeout = 30`\nCopie fid\u00e8le de `examples/tauri-conf-plugin.json` (bloc Plugin Configuration c\u00f4t\u00e9 app, cl\u00e9 `plugins.<plugin-name>`) :\n\n```json\n{\n  \"build\": {},\n  \"tauri\": {},\n  \"plugins\": {\n    \"my-plugin\": {\n      \"timeout\": 30\n    }\n  }\n}\n```\n\nSch\u00e9ma complet : voir skill fr\u00e8re `tauri-config-cli-reference` ; ici seuls `plugins.<nom>` + `platforms.support`.\n\n## 8. Validation `scripts/check-plugin-dev.py` \u2014 tout OK\n```\n$ python3 skills/tauri-plugin-dev/scripts/check-plugin-dev.py --identifier my-plugin\nOK identifier 'my-plugin' valide (develop/Plugins/index.mdx)\n\n$ python3 scripts/check-plugin-dev.py --cargo <outputs>/Cargo.plugin.toml\nOK <outputs>/Cargo.plugin.toml: platforms.support fid\u00e8le (windows=full, linux=full, macos=full, android=partial, ios=none)\n\n$ python3 scripts/check-plugin-dev.py --invoke <outputs>/guest-js-upload.js\nOK <outputs>/guest-js-upload.js: invoke plugin fid\u00e8le\n - invoke plugin:my-plugin|upload\n\n$ python3 scripts/check-plugin-dev.py --invoke <outputs>/lib.rs\nOK <outputs>/lib.rs: invoke plugin fid\u00e8le\n - Builder::new(\"my-plugin\")\n```\nTous `rc=0`. (`src/commands.rs` seul n'est pas pass\u00e9 \u00e0 `--invoke` : sans `Builder::new` il est rejet\u00e9 par design \u2014 `commande Rust sans Builder::new ni invoke_handler` \u2014 c'est `lib.rs` qui l'enregistre.)\n\n## Fronti\u00e8res (rappel doctrine)\n- Capabilities/permissions c\u00f4t\u00e9 app (`capabilities/*.json`, `deny` > `allow`) : autorit\u00e9 `tauri-security-capabilities`.\n- Impl\u00e9mentation IPC c\u00f4t\u00e9 app (`#[tauri::command]`, `Channel`, `State`) : d\u00e9tail `tauri-ipc-bridge`.\n- Fiches usage des 30 plugins : `tauri-plugins-catalogue`. Sch\u00e9ma `tauri.conf` complet / CLI : `tauri-config-cli-reference`.\n"}, {"name": "commands.rs", "type": "text", "content": "use tauri::{command, ipc::Channel, AppHandle, Runtime, Window};\n\n#[command]\nasync fn upload<R: Runtime>(app: AppHandle<R>, window: Window<R>, on_progress: Channel, url: String) {\n    // implement command logic here\n    on_progress.send(100).unwrap();\n}\n"}, {"name": "desktop.rs", "type": "text", "content": "// Desktop implementation for my-plugin.\n// See tauri-docs develop/Plugins/index.mdx (\"Plugin Development\"):\n// \"The plugin APIs defined in the project's `desktop.rs` and `mobile.rs`\n//  are exported to the user as a struct with the same name as the plugin\n//  (in pascal case).\"\n\npub struct MyPlugin<R: tauri::Runtime>(std::marker::PhantomData<R>);\n\nimpl<R: tauri::Runtime> MyPlugin<R> {\n    pub fn upload(&self, _url: String) {\n        // desktop implementation of `upload` (commands.rs exposes it via invoke_handler)\n    }\n}\n"}, {"name": "guest-js-upload.js", "type": "text", "content": "import { invoke, Channel } from '@tauri-apps/api/core'\n\nexport async function upload(url: string, onProgressHandler: (progress: number) => void): Promise<void> {\n  const onProgress = new Channel<number>()\n  onProgress.onmessage = onProgressHandler\n  await invoke('plugin:my-plugin|upload', { url, onProgress })\n}\n"}, {"name": "lib.rs", "type": "text", "content": "use tauri::plugin::Builder;\n\npub fn init<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {\n    Builder::new(\"my-plugin\")\n        .invoke_handler(tauri::generate_handler![crate::commands::upload])\n        .setup(|app, api| {\n            // Register state, spawn background tasks here (setup lifecycle).\n            // Mobile plugins are registered here in generated template.\n            Ok(())\n        })\n        .build()\n}\n"}, {"name": "mobile.rs", "type": "text", "content": "// Mobile implementation stub for my-plugin (desktop-first scaffold).\n// See tauri-docs develop/Plugins/index.mdx (\"Plugin Development\"):\n// mobile APIs live in `mobile.rs`; full Kotlin/Swift wiring is out of scope\n// for this desktop eval (see references/mobile.md for `init` form).\n\npub struct MyPlugin<R: tauri::Runtime>(std::marker::PhantomData<R>);\n\nimpl<R: tauri::Runtime> MyPlugin<R> {\n    pub fn upload(&self, _url: String) {\n        // mobile fallback for `upload`; Android/iOS projects added via\n        // `plugin android add` / `plugin ios add` (index.mdx wording).\n    }\n}\n"}, {"name": "tauri-conf-plugin.json", "type": "text", "content": "{\n  \"build\": {},\n  \"tauri\": {},\n  \"plugins\": {\n    \"my-plugin\": {\n      \"timeout\": 30\n    }\n  }\n}\n"}], "grading": {"expectations": [{"text": "La sortie contient Builder::new(\"my-plugin\") + invoke_handler generate_handler upload appari\u00e9s", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient invoke('plugin:my-plugin|upload') avec Channel c\u00f4t\u00e9 guest-js", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Les scripts check-plugin-dev.py --identifier/--cargo/--invoke retournent OK sur les artefacts produits", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La r\u00e9ponse cite develop/Plugins/index.mdx commit ec113a50 comme source", "passed": true, "evidence": "PASS evidence in answer/transcript"}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}}}, {"id": "eval-scaffold-desktop-without_skill", "prompt": "Scaffold un plugin desktop `my-plugin` conforme doc : crate tauri-plugin-my-plugin, structure src/ (commands.rs upload + desktop.rs/mobile.rs/lib.rs + Builder::new(\"my-plugin\") + invoke_handler upload + setup), guest-js invoke('plugin:my-plugin|upload') avec Channel, Cargo platforms.support (full desktop, android partial avec notes, ios none), tauri.conf plugins.my-plugin timeout 30. Valide avec scripts/check-plugin-dev.py (--identifier/--cargo/--invoke). Le squelette doit suivre les r\u00e8gles document\u00e9es de bout en bout.", "eval_id": 1, "outputs": [{"name": "Cargo.plugin.toml", "type": "text", "content": "[package]\nname = \"tauri-plugin-my-plugin\"\nversion = \"0.1.0\"\nedition = \"2021\"\ndescription = \"Tauri v2 plugin my-plugin (desktop-first upload with progress Channel)\"\nlicense = \"MIT OR Apache-2.0\"\n\n[lib]\nname = \"tauri_plugin_my_plugin\"\ncrate-type = [\"cdylib\", \"rlib\"]\n\n[dependencies]\ntauri = { version = \"2\", features = [] }\nserde = { version = \"1\", features = [\"derive\"] }\nserde_json = \"1\"\nthiserror = \"1\"\nlog = \"0.4\"\n\n[package.metadata.platforms.support]\nwindows = { level = \"full\" }\nlinux = { level = \"full\" }\nmacos = { level = \"full\" }\nandroid = { level = \"partial\", notes = \"Upload works via system picker; background upload is limited by the OS, progress events may be coalesced.\" }\nios = { level = \"none\" }\n"}, {"name": "answer.md", "type": "text", "content": "# Scaffold plugin desktop `my-plugin` \u2014 Tauri v2\n\nSquelette `tauri-plugin-my-plugin` desktop-first, valid\u00e9 avec `scripts/check-plugin-dev.py`\n(`--identifier` / `--cargo` / `--invoke`).\n\n## 1. Identifiant\n\n- Plugin : `my-plugin` \u2192 crate `tauri-plugin-my-plugin`\n- V\u00e9rifi\u00e9 : `python3 scripts/check-plugin-dev.py --identifier my-plugin`\n- R\u00e9sultat : `OK identifier 'my-plugin' valide (develop/Plugins/index.mdx)`\n\nR\u00e8gles appliqu\u00e9es : `[a-z0-9-]`, pas de `_`/majuscules, pas de leading/trailing `-`, `<=64` caract\u00e8res.\n\n## 2. Structure `src/`\n\n```\noutputs/\n  Cargo.plugin.toml\n  guest-js-upload.js\n  tauri.conf.json\n  src/\n    lib.rs       # Builder::new(\"my-plugin\") + invoke_handler upload + setup\n    commands.rs  # #[tauri::command] upload avec Channel\n    desktop.rs   # impl desktop\n    mobile.rs    # run_mobile_plugin(\"upload\"), Android partial / iOS none\n```\n\n### `src/lib.rs`\n\n```rust\nuse tauri::{\n    plugin::{Builder, TauriPlugin},\n    Manager, Runtime,\n};\n\nmod commands;\nmod desktop;\nmod mobile;\n\n#[derive(Debug, thiserror::Error)]\npub enum Error {\n    #[error(transparent)]\n    Io(#[from] std::io::Error),\n    #[error(\"plugin error: {0}\")]\n    Plugin(String),\n    #[error(\"mobile not supported on this target\")]\n    MobileNotSupported,\n}\n\nimpl From<Error> for tauri::InvokeError {\n    fn from(e: Error) -> Self {\n        Self::from(e.to_string())\n    }\n}\n\npub type Result<T> = std::result::Result<T, Error>;\n\n/// Entry point for the `my-plugin` Tauri v2 plugin.\npub fn init<R: Runtime>() -> TauriPlugin<R> {\n    Builder::new(\"my-plugin\")\n        .invoke_handler(tauri::generate_handler![commands::upload])\n        .setup(|app, _api| {\n            let _handle = app.handle().clone();\n            log::info!(\"my-plugin setup\");\n            Ok(())\n        })\n        .build()\n}\n```\n\nPoints : `Builder::new(\"my-plugin\")`, `invoke_handler` expose `upload`, `setup` enregistre l'\u00e9tat desktop.\n\n### `src/commands.rs`\n\n```rust\nuse tauri::{ipc::Channel, AppHandle, Runtime};\n\n#[derive(Debug, Clone, serde::Serialize)]\n#[serde(rename_all = \"camelCase\")]\npub struct UploadProgress {\n    pub chunk: u64,\n    pub total: u64,\n}\n\n/// Upload a file with progress events forwarded over a Channel.\n/// Exposed to JS as `plugin:my-plugin|upload`.\n#[tauri::command]\npub async fn upload<R: Runtime>(\n    _app: AppHandle<R>,\n    path: String,\n    on_progress: Channel<UploadProgress>,\n) -> Result<String, String> {\n    if path.trim().is_empty() {\n        return Err(\"path must not be empty\".into());\n    }\n    let total = 100u64;\n    for chunk in [50u64, 100u64] {\n        let _ = on_progress.send(UploadProgress { chunk, total });\n    }\n    log::info!(\"my-plugin upload {}\", path);\n    Ok(format!(\"uploaded:{path}\"))\n}\n```\n\n### `src/desktop.rs`\n\nImpl desktop `MyPlugin<R>` + `init(app, config)` appel\u00e9e depuis `setup` sur cibles desktop.\n\n### `src/mobile.rs`\n\n```rust\nhandle.run_mobile_plugin::<String>(\"upload\", InvokeBody::Json(...))\n```\n\nAndroid partiel, iOS non support\u00e9 (cf. `platforms.support`).\n\nV\u00e9rifi\u00e9 : `check-plugin-dev.py --invoke src/lib.rs` \u2192 `OK ... Builder::new(\"my-plugin\")`\net `--invoke src/mobile.rs` \u2192 `OK ... run_mobile_plugin(\"upload\")`.\n\n## 3. Guest-JS avec Channel (`guest-js-upload.js`)\n\n```js\nimport { invoke, Channel } from '@tauri-apps/api/core';\n\nexport async function upload(path, onEvent) {\n  const onProgress = new Channel();\n  onProgress.onmessage = (progress) => {\n    onEvent?.(progress);\n  };\n  return invoke('plugin:my-plugin|upload', { path, onProgress });\n}\n```\n\nV\u00e9rifi\u00e9 : `check-plugin-dev.py --invoke guest-js-upload.js` \u2192 `OK ... invoke plugin:my-plugin|upload`.\n\n## 4. Cargo `platforms.support` (`Cargo.plugin.toml`)\n\n```toml\n[package]\nname = \"tauri-plugin-my-plugin\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[package.metadata.platforms.support]\nwindows = { level = \"full\" }\nlinux = { level = \"full\" }\nmacos = { level = \"full\" }\nandroid = { level = \"partial\", notes = \"Upload works via system picker; background upload is limited by the OS, progress events may be coalesced.\" }\nios = { level = \"none\" }\n```\n\nV\u00e9rifi\u00e9 : `check-plugin-dev.py --cargo Cargo.plugin.toml` \u2192 `OK ... platforms.support fid\u00e8le (windows=full, linux=full, macos=full, android=partial, ios=none)`.\n\n## 5. `tauri.conf.json`\n\n```json\n{\n  \"plugins\": {\n    \"my-plugin\": { \"timeout\": 30 }\n  }\n}\n```\n\n`plugins.my-plugin.timeout = 30` v\u00e9rifi\u00e9 par parsing JSON.\n\n## 6. Validation compl\u00e8te\n\n```\npython3 skills/tauri-plugin-dev/scripts/check-plugin-dev.py --identifier my-plugin\n# OK identifier 'my-plugin' valide\n\npython3 skills/tauri-plugin-dev/scripts/check-plugin-dev.py --cargo outputs/Cargo.plugin.toml\n# OK ... platforms.support fid\u00e8le (windows=full, linux=full, macos=full, android=partial, ios=none)\n\npython3 skills/tauri-plugin-dev/scripts/check-plugin-dev.py --invoke outputs/guest-js-upload.js\n# OK ... invoke plugin fid\u00e8le\n#  - invoke plugin:my-plugin|upload\n\npython3 skills/tauri-plugin-dev/scripts/check-plugin-dev.py --invoke outputs/src/lib.rs\n# OK ... invoke plugin fid\u00e8le\n#  - Builder::new(\"my-plugin\")\n```\n\nSquelette suivi de bout en bout : identifier \u2192 Rust commands/desktop/mobile/lib + Builder/invoke_handler/setup \u2192 guest-js `plugin:my-plugin|upload` + `Channel` \u2192 Cargo support desktop full / android partial + notes / ios none \u2192 `tauri.conf` timeout 30.\n"}, {"name": "guest-js-upload.js", "type": "text", "content": "import { invoke, Channel } from '@tauri-apps/api/core';\n\n/**\n * Upload a file via `my-plugin` with progress events.\n * @param {string} path - local file path to upload\n * @param {(p: {chunk:number,total:number}) => void} onEvent - progress callback\n */\nexport async function upload(path, onEvent) {\n  const onProgress = new Channel();\n  onProgress.onmessage = (progress) => {\n    onEvent?.(progress);\n  };\n  return invoke('plugin:my-plugin|upload', { path, onProgress });\n}\n"}, {"name": "tauri.conf.json", "type": "text", "content": "{\n  \"$schema\": \"../gen/schemas/desktop-schema.json\",\n  \"productName\": \"my-app\",\n  \"version\": \"0.1.0\",\n  \"identifier\": \"com.example.my-app\",\n  \"app\": {\n    \"withGlobalTauri\": false,\n    \"windows\": [{ \"label\": \"main\", \"url\": \"index.html\" }],\n    \"security\": { \"csp\": null }\n  },\n  \"bundle\": {\n    \"active\": true,\n    \"targets\": \"all\",\n    \"identifier\": \"com.example.my-app\"\n  },\n  \"plugins\": {\n    \"my-plugin\": {\n      \"timeout\": 30\n    }\n  }\n}\n"}], "grading": {"expectations": [{"text": "La sortie contient Builder::new(\"my-plugin\") + invoke_handler generate_handler upload appari\u00e9s", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient invoke('plugin:my-plugin|upload') avec Channel c\u00f4t\u00e9 guest-js", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Les scripts check-plugin-dev.py --identifier/--cargo/--invoke retournent OK sur les artefacts produits", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La r\u00e9ponse cite develop/Plugins/index.mdx commit ec113a50 comme source", "passed": false, "evidence": "FAIL: missing evidence in answer/transcript/outputs"}], "summary": {"passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75}}}, {"id": "eval-permissions-authoring-with_skill", "prompt": "\u00c9cris les permissions d'un plugin `my-plugin` (commande upload) : allow-upload/deny-upload (commands.allow/deny snake_case), scope global allow-spawn-node (binary node + schemars + build.rs global_scope_schema), set allow-websocket (allow-connect+allow-send), default (allow-request), et build.rs COMMANDS=[\"upload\"] autogen allow-upload/deny-upload. Valide avec scripts/check-plugin-dev.py --permission sans identifiant invent\u00e9, et rappelle que la capability c\u00f4t\u00e9 app vit chez tauri-security-capabilities.", "eval_id": 2, "outputs": [{"name": "answer.md", "type": "text", "content": "# Permissions plugin `my-plugin` (commande `upload`)\n\nSource : `tauri-docs/src/content/docs/develop/Plugins/index.mdx`, commit `ec113a50`, titre `Plugin Development` (sections `Command Permissions`, `Scope` / `Command Scope` / `Global Scope` / `Schema`, `Permission Sets`, `Default Permission`, `Autogenerated Permissions`).\nRoutage skill `tauri-plugin-dev` : intention \u00ab \u00c9crire permissions \u00bb \u2192 `references/permissions.md` \u2192 exemples `examples/permission-allow-start-server.toml`, `examples/permission-scope-spawn-node.toml`, `examples/permission-set-websocket.toml`, `examples/permission-default.toml`, `examples/build-rs-autogen.rs` \u2192 valid\u00e9 par `scripts/check-plugin-dev.py --permission`.\n\n> Par d\u00e9faut les commandes ne sont pas accessibles au frontend (\u00ab By default your commands are not accessible by the frontend\u2026 To actually expose commands, you also need to define permissions that allow each command. \u00bb). Voir aussi \u00ab See the Permissions Overview documentation \u00bb.\n\n## 1. allow / deny sur `upload` \u2014 `permissions/upload.toml`\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-upload\"\ndescription = \"Enables the upload command.\"\ncommands.allow = [\"upload\"]\n\n[[permission]]\nidentifier = \"deny-upload\"\ndescription = \"Denies the upload command.\"\ncommands.deny = [\"upload\"]\n```\n\nR\u00e8gle doc : `identifier` suit la syntaxe identifiant (`references/plugin-basics.md`) ; `commands.allow` / `commands.deny` = listes snake_case (`upload`, comme `start_server` dans l'exemple doc), jamais de `plugin:` ici, jamais d'invention. Fichier livr\u00e9 : `permissions-upload.toml` (copie fid\u00e8le du gabarit `permissions/start-server.toml` transpos\u00e9 de `start_server` \u2192 `upload`).\nAucun identifiant invent\u00e9 : `allow-upload`, `deny-upload`, `upload`, `my-plugin` seuls (tous `--identifier` OK).\n\n## 2. Scope global \u2014 `permissions/spawn-node.toml` + `src/scope.rs` + `schemars` + `build.rs`\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-spawn-node\"\ndescription = \"This scope permits spawning the `node` binary.\"\n\n[[permission.scope.allow]]\nbinary = \"node\"\n```\n\nR\u00e8gle doc : \u00ab When a permission does not define any commands to be allowed or denied, it's considered a scope permission and it should only define a global scope for your plugin. \u00bb Fichier livr\u00e9 : `permissions-scope-spawn-node.toml` (identique \u00e0 `examples/permission-scope-spawn-node.toml`).\n\nStruct scope (`src/scope.rs`, `schemars::JsonSchema` requis) \u2014 fichier livr\u00e9 `scope.rs` :\n\n```rust\n#[derive(Debug, schemars::JsonSchema)]\npub struct Entry {\n    pub binary: String,\n}\n```\n\nD\u00e9pendances (doc : \u00ab The scope entry requires the `schemars` dependency\u2026 `scope.rs` module is shared between the app code and build script \u00bb) :\n\n```toml\n[dependencies]\nschemars = \"0.8\"\n\n[build-dependencies]\nschemars = \"0.8\"\n```\n\nLecture c\u00f4t\u00e9 Rust via `GlobalScope` (et `CommandScope` pour le scope par commande, `docs.rs` link\u00e9s, jamais copi\u00e9s) ; doc : \u00ab We recommend checking both global and command scopes for flexibility \u00bb.\n\n## 3. Set \u2014 `permissions/websocket.toml`\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[set]]\nidentifier = \"allow-websocket\"\ndescription = \"Allows connecting and sending messages through a WebSocket\"\npermissions = [\"allow-connect\", \"allow-send\"]\n```\n\nR\u00e8gle doc : \u00ab Permission sets are groups of individual permissions\u2026 \u00bb Fichier livr\u00e9 : `permissions-set-websocket.toml` (identique \u00e0 `examples/permission-set-websocket.toml`).\n\n## 4. Default \u2014 `permissions/default.toml`\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[default]\ndescription = \"Allows making HTTP requests\"\npermissions = [\"allow-request\"]\n```\n\nR\u00e8gle doc : \u00ab The default permission is a special permission set with identifier `default`. It's recommended that you enable required commands by default. For instance the `http` plugin is useless without the `request` command allowed. \u00bb Fichier livr\u00e9 : `permissions-default.toml` (identique \u00e0 `examples/permission-default.toml`).\n\n## 5. Autogen `build.rs` \u2014 `COMMANDS = &[\"upload\"]`\n\nFichier livr\u00e9 `build.rs` (combine autogen + scope schema, cf. `references/permissions.md` \u00a7 Schema) :\n\n```rust\n#[path = \"src/scope.rs\"]\nmod scope;\n\nconst COMMANDS: &[&str] = &[\"upload\"];\n\nfn main() {\n    tauri_plugin::Builder::new(COMMANDS)\n        .global_scope_schema(schemars::schema_for!(scope::Entry))\n        .build();\n}\n```\n\nR\u00e8gle doc : \u00ab Inside the `COMMANDS` const, define the list of commands in snake_case (should match the command function name) and Tauri will automatically generate an `allow-$commandname` and a `deny-$commandname` permissions. \u00bb Ici `COMMANDS = &[\"upload\"]` g\u00e9n\u00e8re `allow-upload` / `deny-upload`. Cf. `examples/build-rs-autogen.rs`.\n\n## Validation\n\n```\npython3 scripts/check-plugin-dev.py --permission permissions-upload.toml\n# OK permissions-upload.toml: permissions fid\u00e8les (2 permission(s), 0 set(s))\n\npython3 scripts/check-plugin-dev.py --permission permissions-scope-spawn-node.toml\n# OK permissions fid\u00e8les (1 permission(s), 0 set(s))\n\npython3 scripts/check-plugin-dev.py --permission permissions-set-websocket.toml\n# OK permissions fid\u00e8les (0 permission(s), 1 set(s))\n\npython3 scripts/check-plugin-dev.py --permission permissions-default.toml\n# OK permissions fid\u00e8les (0 permission(s), 0 set(s), default)\n\npython3 scripts/check-plugin-dev.py --identifier my-plugin\n# OK identifier 'my-plugin' valide\n# (idem allow-upload, deny-upload, allow-spawn-node, allow-websocket,\n#  allow-connect, allow-send, allow-request, default, upload \u2014 tous OK)\n```\n\n## Fronti\u00e8re\n\nLa capability c\u00f4t\u00e9 app (`capabilities/*.json`, `plugin:scope:cle`, fusion fen\u00eatres, `deny` > `allow`, `trigger` exige `<plugin>:default`, CSP/asset-protocol) ne vit pas ici : seule autorit\u00e9 `tauri-security-capabilities`. Ici c\u00f4t\u00e9 auteur uniquement (`permissions/*.toml` + `build.rs`), doctrine capability l\u00e0-bas.\n"}, {"name": "build.rs", "type": "text", "content": "#[path = \"src/scope.rs\"]\nmod scope;\n\nconst COMMANDS: &[&str] = &[\"upload\"];\n\nfn main() {\n    tauri_plugin::Builder::new(COMMANDS)\n        .global_scope_schema(schemars::schema_for!(scope::Entry))\n        .build();\n}\n"}, {"name": "permissions-default.toml", "type": "text", "content": "\"$schema\" = \"schemas/schema.json\"\n\n[default]\ndescription = \"Allows making HTTP requests\"\npermissions = [\"allow-request\"]\n"}, {"name": "permissions-scope-spawn-node.toml", "type": "text", "content": "\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-spawn-node\"\ndescription = \"This scope permits spawning the `node` binary.\"\n\n[[permission.scope.allow]]\nbinary = \"node\"\n"}, {"name": "permissions-set-websocket.toml", "type": "text", "content": "\"$schema\" = \"schemas/schema.json\"\n\n[[set]]\nidentifier = \"allow-websocket\"\ndescription = \"Allows connecting and sending messages through a WebSocket\"\npermissions = [\"allow-connect\", \"allow-send\"]\n"}, {"name": "permissions-upload.toml", "type": "text", "content": "\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-upload\"\ndescription = \"Enables the upload command.\"\ncommands.allow = [\"upload\"]\n\n[[permission]]\nidentifier = \"deny-upload\"\ndescription = \"Denies the upload command.\"\ncommands.deny = [\"upload\"]\n"}, {"name": "scope.rs", "type": "text", "content": "#[derive(Debug, schemars::JsonSchema)]\npub struct Entry {\n    pub binary: String,\n}\n"}], "grading": {"expectations": [{"text": "La sortie contient [[permission]] allow-upload/deny-upload avec commands.allow/deny snake_case", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient scope global allow-spawn-node + set allow-websocket + default allow-request + build.rs COMMANDS upload", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Le script check-plugin-dev.py --permission retourne OK sur les TOML produits", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re tauri-security-capabilities pour la capability c\u00f4t\u00e9 app et cite develop/Plugins/index.mdx commit ec113a50", "passed": true, "evidence": "PASS evidence in answer/transcript"}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}}}, {"id": "eval-permissions-authoring-without_skill", "prompt": "\u00c9cris les permissions d'un plugin `my-plugin` (commande upload) : allow-upload/deny-upload (commands.allow/deny snake_case), scope global allow-spawn-node (binary node + schemars + build.rs global_scope_schema), set allow-websocket (allow-connect+allow-send), default (allow-request), et build.rs COMMANDS=[\"upload\"] autogen allow-upload/deny-upload. Valide avec scripts/check-plugin-dev.py --permission sans identifiant invent\u00e9, et rappelle que la capability c\u00f4t\u00e9 app vit chez tauri-security-capabilities.", "eval_id": 2, "outputs": [{"name": "answer.md", "type": "text", "content": "# Permissions plugin `my-plugin` \u2014 commande `upload`\n\nArtefacts : `artefacts/permissions/`, `artefacts/src/scope.rs`, `artefacts/build.rs`, `artefacts/Cargo.toml.snippet`.\n\n## 1. allow-upload / deny-upload (`commands.allow` / `deny`, snake_case)\n\n`artefacts/permissions/upload.toml` :\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-upload\"\ndescription = \"Enables the upload command.\"\ncommands.allow = [\"upload\"]\n\n[[permission]]\nidentifier = \"deny-upload\"\ndescription = \"Denies the upload command.\"\ncommands.deny = [\"upload\"]\n```\n\nCommande en snake_case (`upload`) comme exig\u00e9 pour `COMMANDS`.\n\n## 2. Scope global `allow-spawn-node` (binary `node`)\n\n`artefacts/permissions/spawn-node.toml` (permission scope : pas de `commands`, uniquement `scope`) :\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[permission]]\nidentifier = \"allow-spawn-node\"\ndescription = \"This scope permits spawning the `node` binary.\"\n\n[[permission.scope.allow]]\nbinary = \"node\"\n```\n\n`artefacts/src/scope.rs` :\n\n```rust\n#[derive(Debug, schemars::JsonSchema)]\npub struct Entry {\n    pub binary: String,\n}\n```\n\nLecture c\u00f4t\u00e9 commande via `tauri::ipc::GlobalScope<'_, Entry>` (`scope.allows()` / `scope.denies()`).\n\nD\u00e9pendance `schemars` en `[dependencies]` ET `[build-dependencies]` (module partag\u00e9 app + build), voir `artefacts/Cargo.toml.snippet`.\n\n## 3. Set `allow-websocket`\n\n`artefacts/permissions/websocket.toml` :\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[[set]]\nidentifier = \"allow-websocket\"\ndescription = \"Allows connecting and sending messages through a WebSocket\"\npermissions = [\"allow-connect\", \"allow-send\"]\n```\n\n## 4. Default `allow-request`\n\n`artefacts/permissions/default.toml` :\n\n```toml\n\"$schema\" = \"schemas/schema.json\"\n\n[default]\ndescription = \"Allows making HTTP requests\"\npermissions = [\"allow-request\"]\n```\n\n## 5. build.rs \u2014 `COMMANDS = [\"upload\"]` + autogen + `global_scope_schema`\n\n`artefacts/build.rs` :\n\n```rust\n#[path = \"src/scope.rs\"]\nmod scope;\n\nconst COMMANDS: &[&str] = &[\"upload\"];\n\nfn main() {\n    tauri_plugin::Builder::new(COMMANDS)\n        .global_scope_schema(schemars::schema_for!(scope::Entry))\n        .build();\n}\n```\n\n`COMMANDS = [\"upload\"]` g\u00e9n\u00e8re automatiquement `allow-upload` / `deny-upload`.\n\n## 6. Validation\n\nDemand\u00e9 : `scripts/check-plugin-dev.py --permission` sans identifiant invent\u00e9.\n\nR\u00e9sultat honn\u00eate : `scripts/check-plugin-dev.py` n'existe pas dans ce repo (`scripts/` ne contient que `check-tracabilite.py`). Validation impossible via ce script \u2014 non ex\u00e9cut\u00e9, non contourn\u00e9.\n\nContr\u00f4le manuel effectu\u00e9 \u00e0 la place (TOML pars\u00e9, voir transcript) :\n- Tous les fichiers parsent en TOML.\n- Identifiants strictement limit\u00e9s au p\u00e9rim\u00e8tre demand\u00e9 : `allow-upload`, `deny-upload`, `allow-spawn-node`, `allow-websocket` (+ refs `allow-connect`, `allow-send`), `default` (+ ref `allow-request`). Aucun identifiant invent\u00e9.\n- `COMMANDS` contient bien `\"upload\"` ; `global_scope_schema(schemars::schema_for!(scope::Entry))` pr\u00e9sent.\n\n## 7. Rappel capability c\u00f4t\u00e9 app\n\nLa capability c\u00f4t\u00e9 application (fichier `capabilities/*.json`, `permissions` + `windows` + `identifier`) ne vit pas ici : elle rel\u00e8ve de `tauri-security-capabilities`. Ce plugin n'expose que permissions / sets / scopes ; l'activation effective (`my-plugin:allow-upload`, `my-plugin:allow-spawn-node` avec `scope.allow: [{binary: \"node\"}]`, etc.) se fait dans la capability de l'app.\n"}], "grading": {"expectations": [{"text": "La sortie contient [[permission]] allow-upload/deny-upload avec commands.allow/deny snake_case", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient scope global allow-spawn-node + set allow-websocket + default allow-request + build.rs COMMANDS upload", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Le script check-plugin-dev.py --permission retourne OK sur les TOML produits", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La r\u00e9ponse d\u00e9clare la fronti\u00e8re tauri-security-capabilities pour la capability c\u00f4t\u00e9 app et cite develop/Plugins/index.mdx commit ec113a50", "passed": false, "evidence": "FAIL: missing evidence in answer/transcript/outputs"}], "summary": {"passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75}}}, {"id": "eval-mobile-support-with_skill", "prompt": "Ajoute le support mobile \u00e0 `my-plugin` : commande openCamera (Kotlin @Command + Swift @objc + run_mobile_plugin depuis Rust + args InvokeArg/Decodable avec requis/optionnel/d\u00e9faut), permissions checkPermissions/requestPermissions auto, event camera via trigger + addPluginListener('my-plugin','camera'), 16KB (.cargo/config.toml si NDK<28). Valide avec scripts/check-plugin-dev.py --invoke et rappelle que l'\u00e9coute JS exige <plugin>:default en capability chez tauri-security-capabilities.", "eval_id": 3, "outputs": [{"name": "answer.md", "type": "text", "content": "# Support mobile `my-plugin` \u2014 commande `openCamera`\n\nSource canonique : `tauri-docs/src/content/docs/develop/Plugins/develop-mobile.mdx` (titre `Mobile Plugin Development`), commit `ec113a50`, EN canonique seule.\nSkill appliqu\u00e9 : `skills/tauri-plugin-dev` \u2014 routage `Ajouter mobile` \u2192 `references/mobile.md` \u2192 `examples/mobile-command.kt`, `examples/mobile-command.swift`, `examples/mobile-invoke.rs`, `examples/plugin-listener.js` \u2192 `scripts/check-plugin-dev.py --invoke`.\n\n## 1. Android (Kotlin `@Command`)\n\nFichier : `outputs/mobile-command.kt` (d\u00e9riv\u00e9 de `examples/mobile-command.kt`).\n\n```kotlin\n@TauriPlugin\nclass MyPlugin(private val activity: Activity) : Plugin(activity) {\n  @Command\n  fun openCamera(invoke: Invoke) {\n    val args = invoke.parseArgs(OpenCameraArgs::class.java)\n    val ret = JSObject()\n    ret.put(\"path\", \"/photo.jpg\")\n    invoke.resolve(ret)\n    trigger(\"camera\", payload)\n  }\n}\n```\n\nDoc : `A Tauri plugin for Android is defined as a Kotlin class that extends app.tauri.plugin.Plugin and is annotated with app.tauri.annotation.TauriPlugin. Each method annotated with app.tauri.annotation.Command can be called by Rust or JavaScript.`\nMain-thread : `On Android native commands are scheduled on the main thread.` Pour IO bloquant : `CoroutineScope(Dispatchers.IO).launch { ... }`.\nInit projet existant : `plugin android init` et `plugin ios init` (forme `develop-mobile.mdx` ; le guide desktop dit `plugin android add` / `plugin ios add` \u2014 citer la forme du fichier lu, ne jamais fusionner).\n\nArgs `InvokeArg` (requis / optionnel / d\u00e9faut) \u2014 `outputs/mobile-command.kt` :\n\n```kotlin\n@InvokeArg\ninternal class OpenCameraArgs {\n  lateinit var source: String      // requis : lateinit var Type\n  var quality: Int? = null        // optionnel : var Type? = null\n  var allowEdit: Boolean = false  // d\u00e9faut : var Type = default-value\n}\n```\n\nDoc : `Optional arguments are defined as var <argumentName>: Type? = null. Arguments with default values as var <argumentName>: Type = <default-value>. Required arguments as lateinit var <argumentName>: Type.`\nLecture : `invoke.parseArgs(OpenCameraArgs::class.java)`.\n\n## 2. iOS (Swift `@objc`)\n\nFichier : `outputs/mobile-command.swift` (d\u00e9riv\u00e9 de `examples/mobile-command.swift`).\n\n```swift\nclass MyPlugin: Plugin {\n  @objc public func openCamera(_ invoke: Invoke) throws {\n    invoke.resolve([\"path\": \"/photo.jpg\"])\n    trigger(\"camera\", data: [\"path\": \"/photo.jpg\"])\n  }\n}\n```\n\nDoc : `A Tauri plugin for iOS is defined as a Swift class that extends the Plugin class from the Tauri package. Each function with the @objc attribute and the (_ invoke: Invoke) parameter (for example @objc private func download(_ invoke: Invoke) { }) can be called by Rust or JavaScript.`\nPackage : `defined as a Swift package so that you can use its package manager to manage dependencies.`\n\nArgs `Decodable` \u2014 d\u00e9faut NON support\u00e9 :\n\n```swift\nclass OpenCameraArgs: Decodable {\n  let source: String   // requis : let Type\n  var quality: Int?    // optionnel : var Type?\n  var allowEdit: Bool? // d\u00e9faut : nullable + d\u00e9faut pos\u00e9 dans la commande\n}\n// dans openCamera :\nlet allowEdit = args.allowEdit ?? false\n```\n\nDoc : `Optional arguments are defined as var <argumentName>: Type?. Arguments with default values are NOT supported. Use a nullable type and set the default value on the command function instead. Required arguments are defined as let <argumentName>: Type.`\nLecture : `try invoke.parseArgs(OpenCameraArgs.self)`.\n\n## 3. Appel depuis Rust (`run_mobile_plugin`)\n\nFichier : `outputs/mobile-invoke.rs` (d\u00e9riv\u00e9 de `examples/mobile-invoke.rs`).\n\n```rust\nself.0.run_mobile_plugin(\"openCamera\", payload).map_err(Into::into)\n```\n\nForme compl\u00e8te (`CameraRequest` camelCase + `Photo`, `checkPermissions` / `requestPermissions`) :\n\n```rust\npub fn open_camera(&self, payload: CameraRequest) -> crate::Result<Photo> {\n  self.0.run_mobile_plugin(\"openCamera\", payload).map_err(Into::into)\n}\npub fn check_camera_permissions(&self) -> crate::Result<PermissionResponse> {\n  self.0.run_mobile_plugin::<PermissionResponse>(\"checkPermissions\", serde_json::Value::Null).map_err(Into::into)\n}\npub fn request_camera_permissions(&self) -> crate::Result<PermissionResponse> {\n  self.0.run_mobile_plugin::<PermissionResponse>(\"requestPermissions\", serde_json::Value::Null).map_err(Into::into)\n}\npub fn init<R: Runtime>() -> Builder<R> { Builder::new(\"my-plugin\") }\n```\n\nDoc : template scind\u00e9 `The default plugin template splits the plugin's implementation into two separate modules: desktop.rs and mobile.rs.` + `The mobile implementation sends a message to the native mobile code to execute a function and get a result back.` Logique partag\u00e9e en `lib.rs` (`do_something`).\n`PluginHandle::run_mobile_plugin` (docs.rs link\u00e9, jamais copi\u00e9).\nAppel Rust/JS : `run_mobile_plugin(\"openCamera\", payload)` c\u00f4t\u00e9 Rust ; `invoke('plugin:my-plugin|openCamera')` c\u00f4t\u00e9 guest-js selon `references/plugin-basics.md`.\n\nCalling Rust From Mobile (JNI/FFI, WebView suspendue) : `It is often preferable to write plugin code in Rust, for performance and reusability. While Tauri doesn't directly provide a mechanism to call Rust from your plugin code, using JNI on Android and FFI on iOS allows plugins to call shared code, even when the application WebView is suspended.` Android : crate `jni = \"0.21\"` sous `target.'cfg(target_os = \"android\")'.dependencies`, `System.loadLibrary(\"app_lib\")`, `external fun` + `Java_com_example_HelloWorld_helloWorld` (`JNIEnv`, `JClass`, `JString`). iOS : `@_silgen_name` + `extern \"C\"` (`hello_world_ffi`, `free_hello_result_ffi`, `CStr`/`CString`). Blocs complets : voir fichier source `develop-mobile.mdx`, link\u00e9s ici.\n\n## 4. Permissions mobiles (auto)\n\n`Tauri automatically implements two commands for the plugin: checkPermissions and requestPermissions. Those commands can be directly called from JavaScript or Rust.`\n\n- Android : annotation `@TauriPlugin(permissions = [Permission(...)])`, alias ; override iOS `checkPermissions` / `requestPermissions` uniquement si permissions custom (voir fichier source pour snippets complets).\n- Sans override, appeler directement `run_mobile_plugin::<PermissionResponse>(\"requestPermissions\" | \"checkPermissions\")` (Rust, `PermissionState`, `rename_all camelCase`) ou `invoke('plugin:my-plugin|checkPermissions')` (JS, `PermissionState`, `prompt-with-rationale`, `startsWith('prompt')`).\n- Cet ajout ne cr\u00e9e aucun `permissions/*.toml` c\u00f4t\u00e9 auteur ; la `capability` c\u00f4t\u00e9 app reste du ressort de `tauri-security-capabilities` (voir Fronti\u00e8res).\n\n## 5. Events (`trigger` + `addPluginListener`)\n\nNatif \u2014 `Plugins can emit events at any point of time using the trigger function.` :\n\n```kotlin\ntrigger(\"camera\", payload)              // Android : trigger(\"load\", JSObject())\ntrigger(\"camera\", data: [\"path\": ...])  // iOS : trigger(\"load\", data: [:])\n```\n\n\u00c9coute JS \u2014 fichier `outputs/plugin-listener.js` (d\u00e9riv\u00e9 de `examples/plugin-listener.js`) \u2014 alias compact `addPluginListener('my-plugin','camera')` :\n\n```javascript\nimport { addPluginListener, PluginListener } from '@tauri-apps/api/core';\nexport async function onCamera(handler) {\n  return await addPluginListener('my-plugin', 'camera', handler);\n}\n```\n\nDoc :\n\n```javascript\nimport { addPluginListener, PluginListener } from '@tauri-apps/api/core';\nexport async function onRequest(handler): Promise<PluginListener> {\n  return await addPluginListener('<plugin-name>', 'event-name', handler);\n}\n```\n\nCapability obligatoire : `Listening to plugin events from JavaScript is gated by the same capability and permission system that gates plugin commands. Add the plugin's permission (commonly <plugin-name>:default, or a specific allow-listen-* permission if the plugin defines one) to the permissions array of a capability under src-tauri/capabilities/.`\nConcr\u00e8tement : ajouter `my-plugin:default` (forme `<plugin>:default`, donc `<plugin-name>:default`) dans `permissions: [...]` d'une capability `src-tauri/capabilities/*.json`. Toute la doctrine capability c\u00f4t\u00e9 app vit chez `tauri-security-capabilities` \u2014 ce skill ne la duplique pas, il la pointe.\n\n## 6. Pages 16KB Android\n\n`Google is moving to make 16KB memory pages a requirement in all new Android app submissions. Building with an NDK version 28 or higher should automatically generate bundles that meet this requirement, but in the event an older NDK version must be used or generated files aren't 16KB aligned, the following can be added to .cargo/config.toml to flag this to rustc.`\n\nFichier : `outputs/cargo-config.toml` (\u00e0 placer en `.cargo/config.toml`, seulement si NDK < 28) :\n\n```toml\n[target.aarch64-linux-android]\nrustflags = [\"-C\", \"link-arg=-Wl,-z,max-page-size=16384\"]\n```\n\nNDK >= 28 : rien \u00e0 faire.\n\n## 7. Validation `scripts/check-plugin-dev.py --invoke`\n\n```\n$ python3 scripts/check-plugin-dev.py --invoke outputs/mobile-invoke.rs\nOK outputs/mobile-invoke.rs: invoke plugin fid\u00e8le\n - Builder::new(\"my-plugin\")\n - run_mobile_plugin(\"checkPermissions\")\n - run_mobile_plugin(\"openCamera\")\n - run_mobile_plugin(\"requestPermissions\")\n\n$ python3 scripts/check-plugin-dev.py --invoke outputs/plugin-listener.js\nOK outputs/plugin-listener.js: invoke plugin fid\u00e8le\n - addPluginListener('my-plugin', 'camera')\n\n$ python3 scripts/check-plugin-dev.py --identifier my-plugin\nOK identifier 'my-plugin' valide (develop/Plugins/index.mdx)\n```\n\nKotlin/Swift : fid\u00e9lit\u00e9 doc visuelle (`@Command openCamera`, `@objc openCamera`, `InvokeArg`/`Decodable`, `trigger(\"camera\", ...)`), le checker `--invoke` couvre `run_mobile_plugin` / `addPluginListener` c\u00f4t\u00e9 Rust/JS (cf. `SKILL.md` : `Valider avec python3 scripts/check-plugin-dev.py --invoke examples/mobile-invoke.rs et --invoke examples/plugin-listener.js`).\n\n## 8. Fronti\u00e8res inter-skills\n\n- `tauri-security-capabilities` : seule autorit\u00e9 capabilities/permissions c\u00f4t\u00e9 app (`capabilities/*.json`, `my-plugin:default` dans `permissions: [...]`, `deny` > `allow`, CSP/asset-protocol). Ici c\u00f4t\u00e9 auteur mobile (`trigger`/`addPluginListener`) ; l'\u00e9coute JS exige `my-plugin:default` en capability \u2014 doctrine l\u00e0-bas.\n- `tauri-ipc-bridge` : impl\u00e9mentation commands/events/state/resources/sidecar c\u00f4t\u00e9 app (`#[tauri::command]`, `invoke_handler` app, `Channel`, `State`). Ici c\u00f4t\u00e9 plugin (`mobile.rs`/`desktop.rs` via `Builder`, `run_mobile_plugin(\"openCamera\")`).\n- `tauri-plugins-catalogue` : fiches usage des 30 plugins. Ici auteur (cr\u00e9ation).\n- `tauri-config-cli-reference` : sch\u00e9ma `tauri.conf.json`, CLI (`plugin new/android/ios`, ici `plugin android init` / `plugin ios init` forme mobile), env-vars. Ici seulement `plugins.my-plugin` + `platforms.support`.\n- `tauri-start`, `tauri-migrate`, `tauri-core-concepts`, `tauri-dev-quality`, `tauri-distribution`, `tauri-ui-recettes`, `tauri-frontend-bindings` : hors p\u00e9rim\u00e8tre ; renvoyer si le besoin y bascule.\n- Hors pack : `about/`, `contribute`, traductions (EN canonique seule).\n"}, {"name": "cargo-config.toml", "type": "text", "content": "# .cargo/config.toml \u2014 requis seulement si NDK < 28 ou binaires non align\u00e9s 16KB.\n# NDK >= 28 : bundles conformes automatiquement, ce bloc est inutile.\n[target.aarch64-linux-android]\nrustflags = [\"-C\", \"link-arg=-Wl,-z,max-page-size=16384\"]\n"}, {"name": "mobile-command.kt", "type": "binary", "mime": "application/octet-stream", "data_uri": "data:application/octet-stream;base64,aW1wb3J0IGFuZHJvaWQuYXBwLkFjdGl2aXR5CmltcG9ydCBhcHAudGF1cmkuYW5ub3RhdGlvbi5Db21tYW5kCmltcG9ydCBhcHAudGF1cmkuYW5ub3RhdGlvbi5JbnZva2VBcmcKaW1wb3J0IGFwcC50YXVyaS5hbm5vdGF0aW9uLlRhdXJpUGx1Z2luCmltcG9ydCBhcHAudGF1cmkucGx1Z2luLkludm9rZQppbXBvcnQgYXBwLnRhdXJpLnBsdWdpbi5KU09iamVjdAppbXBvcnQgYXBwLnRhdXJpLnBsdWdpbi5QbHVnaW4KCkBUYXVyaVBsdWdpbgpjbGFzcyBNeVBsdWdpbihwcml2YXRlIHZhbCBhY3Rpdml0eTogQWN0aXZpdHkpIDogUGx1Z2luKGFjdGl2aXR5KSB7CgogIEBJbnZva2VBcmcKICBpbnRlcm5hbCBjbGFzcyBPcGVuQ2FtZXJhQXJncyB7CiAgICBsYXRlaW5pdCB2YXIgc291cmNlOiBTdHJpbmcgLy8gcmVxdWlzIDogbGF0ZWluaXQgdmFyIFR5cGUKICAgIHZhciBxdWFsaXR5OiBJbnQ/ID0gbnVsbCAvLyBvcHRpb25uZWwgOiB2YXIgVHlwZT8gPSBudWxsCiAgICB2YXIgYWxsb3dFZGl0OiBCb29sZWFuID0gZmFsc2UgLy8gZMOpZmF1dCA6IHZhciBUeXBlID0gZGVmYXVsdC12YWx1ZQogIH0KCiAgQENvbW1hbmQKICBmdW4gb3BlbkNhbWVyYShpbnZva2U6IEludm9rZSkgewogICAgdmFsIGFyZ3MgPSBpbnZva2UucGFyc2VBcmdzKE9wZW5DYW1lcmFBcmdzOjpjbGFzcy5qYXZhKQogICAgLy8gYXJncy5zb3VyY2UgKHJlcXVpcyksIGFyZ3MucXVhbGl0eSAob3B0aW9ubmVsKSwgYXJncy5hbGxvd0VkaXQgKGTDqWZhdXQgZmFsc2UpCiAgICAvLyBOb3RlIG1haW4tdGhyZWFkIDogbmUgcGFzIGJsb3F1ZXIgOyBwb3VyIElPIHV0aWxpc2VyIENvcm91dGluZVNjb3BlKERpc3BhdGNoZXJzLklPKS5sYXVuY2ggeyAuLi4gfQogICAgdmFsIHJldCA9IEpTT2JqZWN0KCkKICAgIHJldC5wdXQoInBhdGgiLCAiL3Bob3RvLmpwZyIpCiAgICBpbnZva2UucmVzb2x2ZShyZXQpCgogICAgdmFsIHBheWxvYWQgPSBKU09iamVjdCgpCiAgICBwYXlsb2FkLnB1dCgicGF0aCIsICIvcGhvdG8uanBnIikKICAgIHRyaWdnZXIoImNhbWVyYSIsIHBheWxvYWQpCiAgfQp9Cg=="}, {"name": "mobile-command.swift", "type": "binary", "mime": "application/octet-stream", "data_uri": "data:application/octet-stream;base64,aW1wb3J0IFRhdXJpCgpjbGFzcyBPcGVuQ2FtZXJhQXJnczogRGVjb2RhYmxlIHsKICBsZXQgc291cmNlOiBTdHJpbmcgLy8gcmVxdWlzIDogbGV0IFR5cGUKICB2YXIgcXVhbGl0eTogSW50PyAvLyBvcHRpb25uZWwgOiB2YXIgVHlwZT8KICB2YXIgYWxsb3dFZGl0OiBCb29sPyAvLyBkw6lmYXV0IE5PTiBzdXBwb3J0w6kgY8O0dMOpIERlY29kYWJsZSA6IG51bGxhYmxlICsgZMOpZmF1dCBwb3PDqSBkYW5zIGxhIGNvbW1hbmRlCn0KCmNsYXNzIE15UGx1Z2luOiBQbHVnaW4gewogIEBvYmpjIHB1YmxpYyBmdW5jIG9wZW5DYW1lcmEoXyBpbnZva2U6IEludm9rZSkgdGhyb3dzIHsKICAgIGxldCBhcmdzID0gdHJ5IGludm9rZS5wYXJzZUFyZ3MoT3BlbkNhbWVyYUFyZ3Muc2VsZikKICAgIC8vIETDqWZhdXQgcG9zw6kgaWNpIChkb2MpIDogYXJndW1lbnRzIHdpdGggZGVmYXVsdCB2YWx1ZXMgYXJlIE5PVCBzdXBwb3J0ZWQKICAgIGxldCBfcXVhbGl0eSA9IGFyZ3MucXVhbGl0eSA/PyA4MAogICAgbGV0IF9hbGxvd0VkaXQgPSBhcmdzLmFsbG93RWRpdCA/PyBmYWxzZQogICAgbGV0IF8gPSAoX3F1YWxpdHksIF9hbGxvd0VkaXQsIGFyZ3Muc291cmNlKQoKICAgIGludm9rZS5yZXNvbHZlKFsicGF0aCI6ICIvcGhvdG8uanBnIl0pCiAgICB0cmlnZ2VyKCJjYW1lcmEiLCBkYXRhOiBbInBhdGgiOiAiL3Bob3RvLmpwZyJdKQogIH0KCiAgLy8gUGVybWlzc2lvbnMgOiBvdmVycmlkZSBjaGVja1Blcm1pc3Npb25zIC8gcmVxdWVzdFBlcm1pc3Npb25zIHVuaXF1ZW1lbnQgc2kKICAvLyBwZXJtaXNzaW9ucyBjdXN0b20gOyBzaW5vbiBUYXVyaSBmb3Vybml0IGNoZWNrUGVybWlzc2lvbnMvcmVxdWVzdFBlcm1pc3Npb25zIGF1dG8uCn0K"}, {"name": "mobile-invoke.rs", "type": "text", "content": "use serde::{Deserialize, Serialize};\nuse std::path::PathBuf;\nuse tauri::{Runtime, plugin::Builder};\n\n// Mobile : src/mobile.rs \u2014 envoie un message au code natif, r\u00e9cup\u00e8re le r\u00e9sultat.\n// Desktop : src/desktop.rs \u2014 impl\u00e9mentation Rust directe.\n// Logique partag\u00e9e : src/lib.rs (do_something). Voir references/mobile.md.\n\n#[derive(Serialize)]\n#[serde(rename_all = \"camelCase\")]\npub struct CameraRequest {\n    pub source: String,\n    pub quality: usize,\n    pub allow_edit: bool,\n}\n\n#[derive(Deserialize)]\npub struct Photo {\n    pub path: PathBuf,\n}\n\n#[derive(Debug, Deserialize, Serialize)]\n#[serde(rename_all = \"camelCase\")]\npub struct PermissionResponse {\n    pub camera: String,\n}\n\nimpl<R: Runtime> crate::MyPlugin<R> {\n    pub fn open_camera(&self, payload: CameraRequest) -> crate::Result<Photo> {\n        self.0\n            .run_mobile_plugin(\"openCamera\", payload)\n            .map_err(Into::into)\n    }\n\n    pub fn check_camera_permissions(&self) -> crate::Result<PermissionResponse> {\n        self.0\n            .run_mobile_plugin::<PermissionResponse>(\"checkPermissions\", serde_json::Value::Null)\n            .map_err(Into::into)\n    }\n\n    pub fn request_camera_permissions(&self) -> crate::Result<PermissionResponse> {\n        self.0\n            .run_mobile_plugin::<PermissionResponse>(\"requestPermissions\", serde_json::Value::Null)\n            .map_err(Into::into)\n    }\n}\n\npub fn init<R: Runtime>() -> Builder<R> {\n    Builder::new(\"my-plugin\")\n}\n"}, {"name": "plugin-listener.js", "type": "text", "content": "import { addPluginListener, PluginListener } from '@tauri-apps/api/core';\n\nexport async function onCamera(\n  handler: (photo: { path: string }) => void\n): Promise<PluginListener> {\n  return await addPluginListener(\n    'my-plugin',\n    'camera',\n    handler\n  );\n}\n"}], "grading": {"expectations": [{"text": "La sortie contient Kotlin @Command openCamera + Swift @objc openCamera + run_mobile_plugin(\"openCamera\")", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient checkPermissions/requestPermissions auto + trigger camera + addPluginListener('my-plugin','camera')", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Le script check-plugin-dev.py --invoke retourne OK sur les fichiers mobiles/JS produits", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La r\u00e9ponse d\u00e9clare que l'\u00e9coute exige <plugin>:default en capability (tauri-security-capabilities) et cite develop/Plugins/develop-mobile.mdx commit ec113a50", "passed": true, "evidence": "PASS evidence in answer/transcript"}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}}}, {"id": "eval-mobile-support-without_skill", "prompt": "Ajoute le support mobile \u00e0 `my-plugin` : commande openCamera (Kotlin @Command + Swift @objc + run_mobile_plugin depuis Rust + args InvokeArg/Decodable avec requis/optionnel/d\u00e9faut), permissions checkPermissions/requestPermissions auto, event camera via trigger + addPluginListener('my-plugin','camera'), 16KB (.cargo/config.toml si NDK<28). Valide avec scripts/check-plugin-dev.py --invoke et rappelle que l'\u00e9coute JS exige <plugin>:default en capability chez tauri-security-capabilities.", "eval_id": 3, "outputs": [{"name": "answer.md", "type": "text", "content": "# Support mobile `my-plugin` \u2014 commande `openCamera`\n\n## 1. Android \u2014 Kotlin `@Command` (`android/src/main/java/com/plugin/myplugin/MyPlugin.kt`)\n\n```kotlin\npackage com.plugin.myplugin\n\nimport android.app.Activity\nimport app.tauri.plugin.Command\nimport app.tauri.plugin.Invoke\nimport app.tauri.plugin.Plugin\nimport app.tauri.plugin.JSObject\n\nclass MyPluginPlugin(activity: Activity) : Plugin(activity) {\n\n    @Command\n    fun openCamera(invoke: Invoke) {\n        // requis : quality\n        val quality = invoke.getString(\"quality\")\n            ?: return invoke.reject(\"quality est requis\")\n        // optionnel : flash (nullable)\n        val flash = invoke.getBoolean(\"flash\") // null si absent\n        // d\u00e9faut : mode = \"auto\" si absent\n        val mode = invoke.getString(\"mode\", \"auto\")!!\n\n        // ... ouvrir la cam\u00e9ra avec quality/flash/mode ...\n\n        val ret = JSObject()\n        ret.put(\"path\", \"/tmp/photo.jpg\")\n        ret.put(\"quality\", quality)\n        invoke.resolve(ret)\n    }\n\n    // checkPermissions / requestPermissions sont fournis\n    // automatiquement par la classe Plugin d\u00e8s que les\n    // permissions sont d\u00e9clar\u00e9es (voir \u00a74).\n    // Pas besoin de les r\u00e9\u00e9crire sauf logique custom.\n}\n```\n\nD\u00e9claration Android dans `android/src/main/AndroidManifest.xml` :\n\n```xml\n<uses-permission android:name=\"android.permission.CAMERA\" />\n```\n\nEnregistrement dans `src/mobile.rs` c\u00f4t\u00e9 Rust (plugin id `my-plugin`).\n\n## 2. iOS \u2014 Swift `@objc` + `Decodable` (`ios/Sources/MyPluginPlugin.swift`)\n\n```swift\nimport Tauri\n\nstruct OpenCameraArgs: Decodable {\n    let quality: String       // requis : decode \u00e9choue si absent\n    let flash: Bool?          // optionnel : nil si absent\n    var mode: String = \"auto\" // d\u00e9faut via extension ou decodeIfPresent\n}\n\nextension OpenCameraArgs {\n    enum CodingKeys: String, CodingKey {\n        case quality, flash, mode\n    }\n    init(from decoder: Decoder) throws {\n        let c = try decoder.container(keyedBy: CodingKeys.self)\n        quality = try c.decode(String.self, forKey: .quality)\n        flash = try c.decodeIfPresent(Bool.self, forKey: .flash)\n        mode = try c.decodeIfPresent(String.self, forKey: .mode) ?? \"auto\"\n    }\n}\n\nclass MyPluginPlugin: Plugin {\n    @objc func openCamera(_ invoke: Invoke) throws {\n        let args = try invoke.parseArgs(OpenCameraArgs.self)\n        // ... ouvrir la cam\u00e9ra ...\n        invoke.resolve([\"path\": \"/tmp/photo.jpg\", \"quality\": args.quality])\n    }\n    // checkPermissions / requestPermissions : auto via Plugin de base.\n}\n```\n\nPermission iOS dans `ios/MyPlugin-Info.plist` :\n\n```xml\n<key>NSCameraUsageDescription</key>\n<string>my-plugin a besoin de la cam\u00e9ra</string>\n```\n\n## 3. Rust \u2014 `run_mobile_plugin` + args (`src/mobile.rs` + `src/commands.rs`)\n\n```rust\nuse serde::{Deserialize, Serialize};\nuse tauri::{AppHandle, Runtime};\n\nfn default_mode() -> String { \"auto\".to_string() }\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\n#[serde(rename_all = \"camelCase\")]\npub struct OpenCameraArgs {\n    pub quality: String,              // requis\n    pub flash: Option<bool>,          // optionnel\n    #[serde(default = \"default_mode\")]\n    pub mode: String,                 // d\u00e9faut = \"auto\"\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub struct CameraResult {\n    pub path: String,\n}\n\n#[tauri::command]\npub async fn open_camera<R: Runtime>(\n    app: AppHandle<R>,\n    args: OpenCameraArgs,\n) -> Result<CameraResult, String> {\n    #[cfg(mobile)]\n    {\n        app.run_mobile_plugin(\"openCamera\", args)\n            .map_err(|e| e.to_string())\n    }\n    #[cfg(not(mobile))]\n    {\n        let _ = app;\n        Err(\"openCamera n'est support\u00e9 que sur mobile\".into())\n    }\n}\n```\n\n`src/lib.rs` (extrait) :\n\n```rust\nuse tauri::{Runtime, plugin::TauriPlugin};\n\npub fn init<R: Runtime>() -> TauriPlugin<R> {\n    tauri::plugin::Builder::new(\"my-plugin\")\n        .invoke_handler(tauri::generate_handler![commands::open_camera])\n        .setup(|app, _api| {\n            #[cfg(mobile)]\n            let _handle = app.register_mobile_plugin(\n                \"com.plugin.myplugin\",\n                \"MyPluginPlugin\",\n            )?;\n            Ok(())\n        })\n        .build()\n}\n```\n\n> `invoke('plugin:my-plugin|openCamera', args)` c\u00f4t\u00e9 guest-js est rout\u00e9\n> vers `open_camera` sur desktop et vers le plugin natif via\n> `run_mobile_plugin(\"openCamera\", \u2026)` sur mobile.\n\n## 4. Permissions `checkPermissions` / `requestPermissions` (auto)\n\nAucun code Kotlin/Swift \u00e0 \u00e9crire : Tauri g\u00e9n\u00e8re ces deux commandes\nd\u00e8s que le plugin d\u00e9clare des permissions mobiles.\n\n```toml\n# permissions/mobile_camera.toml (exemple)\n[[permission]]\nidentifier = \"camera\"\ndescription = \"Permet d'ouvrir la cam\u00e9ra\"\n```\n\n```js\n// guest-js : les commandes existent sans code natif suppl\u00e9mentaire\nimport { invoke } from '@tauri-apps/api/core';\nawait invoke('plugin:my-plugin|checkPermissions');\nawait invoke('plugin:my-plugin|requestPermissions', { permissions: ['camera'] });\nawait invoke('plugin:my-plugin|openCamera', { quality: 'hd' });\n```\n\n## 5. Event `camera` \u2014 `trigger` (Rust) + `addPluginListener` (JS)\n\nRust \u2014 \u00e9mettre apr\u00e8s capture (ex. dans `mobile.rs` ou apr\u00e8s `open_camera`) :\n\n```rust\nuse tauri::Emitter; // ou plugin trigger selon version\n\napp.trigger(\"my-plugin://camera\", serde_json::json!({\n    \"path\": \"/tmp/photo.jpg\"\n}))?;\n```\n\nJS \u2014 \u00e9coute :\n\n```js\nimport { addPluginListener } from '@tauri-apps/api/core';\n\nconst unlisten = await addPluginListener('my-plugin', 'camera', (event) => {\n  console.log('photo:', event.payload.path);\n});\n```\n\n## 6. Page-size 16 Ko (seulement si NDK < 28)\n\nNDK r28+ aligne d\u00e9j\u00e0 sur 16 Ko (Android 15+ l'exige). Si NDK \u2264 r27,\nforcer dans `.cargo/config.toml` :\n\n```toml\n# .cargo/config.toml\n[target.aarch64-linux-android]\nrustflags = [\"-C\", \"link-args=-Wl,-z,max-page-size=16384\"]\n\n[target.armv7-linux-androideabi]\nrustflags = [\"-C\", \"link-args=-Wl,-z,max-page-size=16384\"]\n\n[target.i686-linux-android]\nrustflags = [\"-C\", \"link-args=-Wl,-z,max-page-size=16384\"]\n\n[target.x86_64-linux-android]\nrustflags = [\"-C\", \"link-args=-Wl,-z,max-page-size=16384\"]\n```\n\n## 7. Validation\n\n```bash\npython3 scripts/check-plugin-dev.py --invoke path/to/mobile.rs\npython3 scripts/check-plugin-dev.py --invoke path/to/MyPlugin.kt\npython3 scripts/check-plugin-dev.py --invoke path/to/MyPluginPlugin.swift\npython3 scripts/check-plugin-dev.py --invoke path/to/listener.js\n```\n\nCorriger jusqu'au vert avant de merger.\n\n## 8. Rappel capability (d\u00e9l\u00e9gu\u00e9 \u00e0 `tauri-security-capabilities`)\n\nL'\u00e9coute JS via `addPluginListener('my-plugin', 'camera', \u2026)` ne re\u00e7oit\nrien sans permission c\u00f4t\u00e9 app. Ajouter le set par d\u00e9faut dans la\ncapability :\n\n```json\n{\n  \"permissions\": [\"my-plugin:default\"]\n}\n```\n\nLe d\u00e9tail capabilities/permissions c\u00f4t\u00e9 app (deny > allow, scopes,\nCSP) est l'autorit\u00e9 de `tauri-security-capabilities`, pas d'ici.\n"}], "grading": {"expectations": [{"text": "La sortie contient Kotlin @Command openCamera + Swift @objc openCamera + run_mobile_plugin(\"openCamera\")", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "La sortie contient checkPermissions/requestPermissions auto + trigger camera + addPluginListener('my-plugin','camera')", "passed": true, "evidence": "PASS evidence in answer/transcript"}, {"text": "Le script check-plugin-dev.py --invoke retourne OK sur les fichiers mobiles/JS produits", "passed": false, "evidence": "FAIL: missing evidence in answer/transcript/outputs"}, {"text": "La r\u00e9ponse d\u00e9clare que l'\u00e9coute exige <plugin>:default en capability (tauri-security-capabilities) et cite develop/Plugins/develop-mobile.mdx commit ec113a50", "passed": false, "evidence": "FAIL: missing evidence in answer/transcript/outputs"}], "summary": {"passed": 2, "failed": 2, "total": 4, "pass_rate": 0.5}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "tauri-plugin-dev", "timestamp": "2026-10-31", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "scaffold-desktop", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}, {"eval_id": 1, "eval_name": "scaffold-desktop", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.75, "passed": 3, "failed": 1, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}, {"eval_id": 2, "eval_name": "permissions-authoring", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}, {"eval_id": 2, "eval_name": "permissions-authoring", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.75, "passed": 3, "failed": 1, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}, {"eval_id": 3, "eval_name": "mobile-support", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}, {"eval_id": 3, "eval_name": "mobile-support", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 2, "failed": 2, "total": 4, "time_seconds": 0, "tokens": 0, "errors": 0}, "expectations": [], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "without_skill": {"pass_rate": {"mean": 0.6667, "stddev": 0.1443, "min": 0.5, "max": 0.75}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "delta": {"pass_rate": "+0.33", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": ["with_skill 12/12 (3x4) vs without_skill 8/12 : skill discriminante sur citation source commit+titre, @TauriPlugin/@Command Android et preuve script --permission/--invoke."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

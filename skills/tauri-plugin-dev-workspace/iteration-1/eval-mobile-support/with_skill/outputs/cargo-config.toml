@@ -1,0 +1,4 @@
+# .cargo/config.toml — requis seulement si NDK < 28 ou binaires non alignés 16KB.
+# NDK >= 28 : bundles conformes automatiquement, ce bloc est inutile.
+[target.aarch64-linux-android]
+rustflags = ["-C", "link-arg=-Wl,-z,max-page-size=16384"]

@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient Kotlin @Command openCamera + Swift @objc openCamera + run_mobile_plugin(\"openCamera\")",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "La sortie contient checkPermissions/requestPermissions auto + trigger camera + addPluginListener('my-plugin','camera')",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "Le script check-plugin-dev.py --invoke retourne OK sur les fichiers mobiles/JS produits",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "La réponse déclare que l'écoute exige <plugin>:default en capability (tauri-security-capabilities) et cite develop/Plugins/develop-mobile.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "build": {},
+  "tauri": {},
+  "plugins": {
+    "my-plugin": {
+      "timeout": 30
+    }
+  }
+}

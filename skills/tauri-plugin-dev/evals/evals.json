@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-plugin-dev",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scaffold un plugin desktop `my-plugin` conforme doc : crate tauri-plugin-my-plugin, structure src/ (commands.rs upload + desktop.rs/mobile.rs/lib.rs + Builder::new(\"my-plugin\") + invoke_handler upload + setup), guest-js invoke('plugin:my-plugin|upload') avec Channel, Cargo platforms.support (full desktop, android partial avec notes, ios none), tauri.conf plugins.my-plugin timeout 30. Valide avec scripts/check-plugin-dev.py (--identifier/--cargo/--invoke). Le squelette doit suivre les règles documentées de bout en bout.",
+      "expected_output": "Squelette desktop (lib.rs + commands.rs + guest-js + Cargo + tauri.conf) avec identifier valide, Builder/invoke_handler/invoke plugin: appariés, checks OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient Builder::new(\"my-plugin\") + invoke_handler generate_handler upload appariés",
+        "La sortie contient invoke('plugin:my-plugin|upload') avec Channel côté guest-js",
+        "Les scripts check-plugin-dev.py --identifier/--cargo/--invoke retournent OK sur les artefacts produits",
+        "La réponse cite develop/Plugins/index.mdx commit ec113a50 comme source"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Écris les permissions d'un plugin `my-plugin` (commande upload) : allow-upload/deny-upload (commands.allow/deny snake_case), scope global allow-spawn-node (binary node + schemars + build.rs global_scope_schema), set allow-websocket (allow-connect+allow-send), default (allow-request), et build.rs COMMANDS=[\"upload\"] autogen allow-upload/deny-upload. Valide avec scripts/check-plugin-dev.py --permission sans identifiant inventé, et rappelle que la capability côté app vit chez tauri-security-capabilities.",
+      "expected_output": "permissions TOML (allow/deny + scope + set + default) + build.rs COMMANDS, check --permission OK, frontière sécurité rappelée",
+      "files": [],
+      "expectations": [
+        "La sortie contient [[permission]] allow-upload/deny-upload avec commands.allow/deny snake_case",
+        "La sortie contient scope global allow-spawn-node + set allow-websocket + default allow-request + build.rs COMMANDS upload",
+        "Le script check-plugin-dev.py --permission retourne OK sur les TOML produits",
+        "La réponse déclare la frontière tauri-security-capabilities pour la capability côté app et cite develop/Plugins/index.mdx commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Ajoute le support mobile à `my-plugin` : commande openCamera (Kotlin @Command + Swift @objc + run_mobile_plugin depuis Rust + args InvokeArg/Decodable avec requis/optionnel/défaut), permissions checkPermissions/requestPermissions auto, event camera via trigger + addPluginListener('my-plugin','camera'), 16KB (.cargo/config.toml si NDK<28). Valide avec scripts/check-plugin-dev.py --invoke et rappelle que l'écoute JS exige <plugin>:default en capability chez tauri-security-capabilities.",
+      "expected_output": "Mobile Kotlin+Swift + run_mobile_plugin + args + permissions auto + trigger/listener + 16KB, checks --invoke OK, frontière capability rappelée",
+      "files": [],
+      "expectations": [
+        "La sortie contient Kotlin @Command openCamera + Swift @objc openCamera + run_mobile_plugin(\"openCamera\")",
+        "La sortie contient checkPermissions/requestPermissions auto + trigger camera + addPluginListener('my-plugin','camera')",
+        "Le script check-plugin-dev.py --invoke retourne OK sur les fichiers mobiles/JS produits",
+        "La réponse déclare que l'écoute exige <plugin>:default en capability (tauri-security-capabilities) et cite develop/Plugins/develop-mobile.mdx commit ec113a50"
+      ]
+    }
+  ]
+}

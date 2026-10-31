@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "permissions-authoring",
+  "prompt": "Écris les permissions d'un plugin `my-plugin` (commande upload) : allow-upload/deny-upload (commands.allow/deny snake_case), scope global allow-spawn-node (binary node + schemars + build.rs global_scope_schema), set allow-websocket (allow-connect+allow-send), default (allow-request), et build.rs COMMANDS=[\"upload\"] autogen allow-upload/deny-upload. Valide avec scripts/check-plugin-dev.py --permission sans identifiant inventé, et rappelle que la capability côté app vit chez tauri-security-capabilities.",
+  "assertions": [
+    "La sortie contient [[permission]] allow-upload/deny-upload avec commands.allow/deny snake_case",
+    "La sortie contient scope global allow-spawn-node + set allow-websocket + default allow-request + build.rs COMMANDS upload",
+    "Le script check-plugin-dev.py --permission retourne OK sur les TOML produits",
+    "La réponse déclare la frontière tauri-security-capabilities pour la capability côté app et cite develop/Plugins/index.mdx commit ec113a50"
+  ]
+}

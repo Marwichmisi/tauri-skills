@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient [[permission]] allow-upload/deny-upload avec commands.allow/deny snake_case",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "La sortie contient scope global allow-spawn-node + set allow-websocket + default allow-request + build.rs COMMANDS upload",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "Le script check-plugin-dev.py --permission retourne OK sur les TOML produits",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    },
+    {
+      "text": "La réponse déclare la frontière tauri-security-capabilities pour la capability côté app et cite develop/Plugins/index.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "PASS evidence in answer/transcript"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

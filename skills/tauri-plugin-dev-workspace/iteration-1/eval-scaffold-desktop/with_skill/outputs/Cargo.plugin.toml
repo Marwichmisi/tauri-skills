@@ -1,0 +1,10 @@
+[package]
+name = "tauri-plugin-my-plugin"
+version = "0.1.0"
+
+[package.metadata.platforms.support]
+windows = { level = "full" }
+linux = { level = "full" }
+macos = { level = "full" }
+android = { level = "partial", notes = "Access is restricted to the Application folder by default" }
+ios = { level = "none" }

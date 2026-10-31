@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "mobile-support",
+  "prompt": "Ajoute le support mobile à `my-plugin` : commande openCamera (Kotlin @Command + Swift @objc + run_mobile_plugin depuis Rust + args InvokeArg/Decodable avec requis/optionnel/défaut), permissions checkPermissions/requestPermissions auto, event camera via trigger + addPluginListener('my-plugin','camera'), 16KB (.cargo/config.toml si NDK<28). Valide avec scripts/check-plugin-dev.py --invoke et rappelle que l'écoute JS exige <plugin>:default en capability chez tauri-security-capabilities.",
+  "assertions": [
+    "La sortie contient Kotlin @Command openCamera + Swift @objc openCamera + run_mobile_plugin(\"openCamera\")",
+    "La sortie contient checkPermissions/requestPermissions auto + trigger camera + addPluginListener('my-plugin','camera')",
+    "Le script check-plugin-dev.py --invoke retourne OK sur les fichiers mobiles/JS produits",
+    "La réponse déclare que l'écoute exige <plugin>:default en capability (tauri-security-capabilities) et cite develop/Plugins/develop-mobile.mdx commit ec113a50"
+  ]
+}

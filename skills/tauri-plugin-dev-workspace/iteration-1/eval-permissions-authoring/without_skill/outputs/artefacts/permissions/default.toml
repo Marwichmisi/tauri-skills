@@ -1,0 +1,5 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = "Allows making HTTP requests"
+permissions = ["allow-request"]
