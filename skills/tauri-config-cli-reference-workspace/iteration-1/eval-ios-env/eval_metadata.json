@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-ios-env",
+  "prompt": "Sur macOS, je prépare le build iOS : pnpm tauri ios init/dev/build, TAURI_CLI_PORT=1430 + CI=true, TAURI_DEV_HOST pour le device physique, et un hook qui lit TAURI_ENV_PLATFORM/TAURI_ENV_DEBUG. Valide avec scripts/check-config-cli.py --cli/--env sans variable inventée (le flag prime sur la variable).",
+  "assertions": []
+}

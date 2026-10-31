@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient WebView2/Chromium préinstallé Win11 + Android WebView système + WKWebView macOS",
+      "passed": true,
+      "evidence": "answer.md: trois moteurs présents"
+    },
+    {
+      "text": "La sortie contient awk Info.plist côté macOS + inspector Android + renvoi caniuse/distro Linux",
+      "passed": false,
+      "evidence": "answer.md: commande macOS 'sw_vers/defaults read Safari' au lieu du 'awk … WebKit … Info.plist' doc; pas de renvoi dépôts distro"
+    },
+    {
+      "text": "La réponse déclare la frontière webkit2gtk-debug vers tauri-dev-quality",
+      "passed": false,
+      "evidence": "answer.md: aucune frontière inter-skill"
+    },
+    {
+      "text": "La réponse cite reference/webview-versions.md commit ec113a50",
+      "passed": false,
+      "evidence": "answer.md: aucun pointeur Source ni commit"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 3,
+    "total": 4,
+    "pass_rate": 0.25
+  }
+}

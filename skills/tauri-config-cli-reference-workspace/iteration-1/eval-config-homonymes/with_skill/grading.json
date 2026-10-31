@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient plugins.cli avec description + args verbose + subcommand run debug/release",
+      "passed": true,
+      "evidence": "answer.md + tauri.conf.json: description/verbose -v/run debug+release présents"
+    },
+    {
+      "text": "La sortie distingue tauri add cli/dev (dev) de getMatches/CliExt + cli:default (in-app) et rejette tauri cli",
+      "passed": true,
+      "evidence": "answer.md tableau homonymes + 'tauri cli … n'existe pas'; check --cli OK dev+in-app"
+    },
+    {
+      "text": "Les scripts check-config-cli.py --config/--cli retournent OK sur les artefacts produits",
+      "passed": true,
+      "evidence": "OK tauri.conf.json (args=1); OK cli.sh dev+in-app"
+    },
+    {
+      "text": "La réponse cite plugin/cli.mdx + reference/_cli.mdx commit ec113a50 et renvoie la doctrine permission vers tauri-security-capabilities",
+      "passed": true,
+      "evidence": "answer.md §Sources + §Frontières sécurité"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

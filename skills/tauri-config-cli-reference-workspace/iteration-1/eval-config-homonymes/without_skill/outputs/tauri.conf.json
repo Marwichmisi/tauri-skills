@@ -1,0 +1,67 @@
+{
+  "$schema": "../gen/schemas/config-schema.json",
+  "productName": "cli-demo",
+  "version": "0.1.0",
+  "identifier": "com.example.cli-demo",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "cli-demo",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "cli": {
+      "description": "Demo app showcasing in-app CLI (verbose + run subcommand)",
+      "beforeDevCommand": "",
+      "args": [
+        {
+          "name": "verbose",
+          "short": "v",
+          "takes_value": false,
+          "multiple": false,
+          "description": "Enable verbose output"
+        }
+      ],
+      "subcommands": {
+        "run": {
+          "description": "Run in a given mode",
+          "args": [
+            {
+              "name": "debug",
+              "takes_value": false,
+              "description": "Run in debug mode"
+            },
+            {
+              "name": "release",
+              "takes_value": false,
+              "description": "Run in release mode"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

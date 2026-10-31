@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient tauri ios init/dev/build sur hôte macOS + TAURI_DEV_HOST/TAURI_CLI_PORT",
+      "passed": true,
+      "evidence": "answer.md + ios-commands.sh: init/dev/build macOS + DEV_HOST/PORT"
+    },
+    {
+      "text": "La sortie contient TAURI_ENV_PLATFORM/TAURI_ENV_DEBUG côté hook et la règle flag > variable",
+      "passed": true,
+      "evidence": "answer.md: hook lecture seule + 'le flag prime'"
+    },
+    {
+      "text": "Les scripts check-config-cli.py --cli/--env retournent OK et rejettent toute variable inventée",
+      "passed": true,
+      "evidence": "OK ios-commands.sh dev=['ios']; OK env.conf CI/PORT/DEV_HOST"
+    },
+    {
+      "text": "La réponse cite reference/_cli_ios.mdx + reference/environment-variables.mdx commit ec113a50",
+      "passed": true,
+      "evidence": "answer.md §Sources ec113a50 + Frontières"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

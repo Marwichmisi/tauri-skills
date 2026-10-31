@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "La sortie contient plugins.cli avec description + args verbose + subcommand run debug/release",
+      "passed": true,
+      "evidence": "answer.md: description/verbose -v/run debug+release présents (forme à part)"
+    },
+    {
+      "text": "La sortie distingue tauri add cli/dev (dev) de getMatches/CliExt + cli:default (in-app) et rejette tauri cli",
+      "passed": false,
+      "evidence": "answer.md: 'app.cli().get_matches()' inventé (doc: 'matches()'), 'cli:allow-get-matches' inventé (doc: 'cli:default'), pas de rejet 'tauri cli'"
+    },
+    {
+      "text": "Les scripts check-config-cli.py --config/--cli retournent OK sur les artefacts produits",
+      "passed": false,
+      "evidence": "FAIL tauri.conf.json: clé 'beforeDevCommand' sous plugins.cli + 'takes_value' snake_case (doc: 'takesValue'); cli.sh OK seul"
+    },
+    {
+      "text": "La réponse cite plugin/cli.mdx + reference/_cli.mdx commit ec113a50 et renvoie la doctrine permission vers tauri-security-capabilities",
+      "passed": false,
+      "evidence": "answer.md: aucun pointeur Source ni commit ec113a50"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 3,
+    "total": 4,
+    "pass_rate": 0.25
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "skill_name": "tauri-config-cli-reference",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Valide ma tauri.conf.json in-app : plugins.cli description + args verbose (-v) + subcommand run (debug/release), $schema gen/schemas. Distingue sans erreur la CLI dev (tauri add cli, tauri dev/build) de l'usage in-app (getMatches/CliExt, permission cli:default). Le tout doit passer scripts/check-config-cli.py --config/--cli sans inventer de champ ni de commande.",
+      "expected_output": "tauri.conf plugins.cli conforme + homonymes distingués (dev vs in-app), checks --config/--cli OK",
+      "files": [],
+      "expectations": [
+        "La sortie contient plugins.cli avec description + args verbose + subcommand run debug/release",
+        "La sortie distingue tauri add cli/dev (dev) de getMatches/CliExt + cli:default (in-app) et rejette tauri cli",
+        "Les scripts check-config-cli.py --config/--cli retournent OK sur les artefacts produits",
+        "La réponse cite plugin/cli.mdx + reference/_cli.mdx commit ec113a50 et renvoie la doctrine permission vers tauri-security-capabilities"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Sur macOS, je prépare le build iOS : pnpm tauri ios init/dev/build, TAURI_CLI_PORT=1430 + CI=true, TAURI_DEV_HOST pour le device physique, et un hook qui lit TAURI_ENV_PLATFORM/TAURI_ENV_DEBUG. Valide avec scripts/check-config-cli.py --cli/--env sans variable inventée (le flag prime sur la variable).",
+      "expected_output": "Commandes ios macOS + env CLI/hook documentés, checks --cli/--env OK, priorité flag rappelée",
+      "files": [],
+      "expectations": [
+        "La sortie contient tauri ios init/dev/build sur hôte macOS + TAURI_DEV_HOST/TAURI_CLI_PORT",
+        "La sortie contient TAURI_ENV_PLATFORM/TAURI_ENV_DEBUG côté hook et la règle flag > variable",
+        "Les scripts check-config-cli.py --cli/--env retournent OK et rejettent toute variable inventée",
+        "La réponse cite reference/_cli_ios.mdx + reference/environment-variables.mdx commit ec113a50"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quelle webview cible mon app sur Windows 11, Android 14 et macOS Sonoma, et comment vérifier la version exacte (commande macOS, inspector Android, équivalence caniuse) ? Si c'est du ressort webkit2gtk Linux en debug, renvoie vers tauri-dev-quality.",
+      "expected_output": "WebView2/Edge-Chromium + Android WebView système + WebKit WKWebView avec moyens de vérification, frontière dev-quality rappelée",
+      "files": [],
+      "expectations": [
+        "La sortie contient WebView2/Chromium préinstallé Win11 + Android WebView système + WKWebView macOS",
+        "La sortie contient awk Info.plist côté macOS + inspector Android + renvoi caniuse/distro Linux",
+        "La réponse déclare la frontière webkit2gtk-debug vers tauri-dev-quality",
+        "La réponse cite reference/webview-versions.md commit ec113a50"
+      ]
+    }
+  ]
+}

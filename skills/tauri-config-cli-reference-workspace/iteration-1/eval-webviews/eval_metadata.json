@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-webviews",
+  "prompt": "Quelle webview cible mon app sur Windows 11, Android 14 et macOS Sonoma, et comment vérifier la version exacte (commande macOS, inspector Android, équivalence caniuse) ? Si c'est du ressort webkit2gtk Linux en debug, renvoie vers tauri-dev-quality.",
+  "assertions": []
+}

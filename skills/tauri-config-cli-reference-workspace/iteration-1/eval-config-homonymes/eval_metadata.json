@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-config-homonymes",
+  "prompt": "Valide ma tauri.conf.json in-app : plugins.cli description + args verbose (-v) + subcommand run (debug/release), $schema gen/schemas. Distingue sans erreur la CLI dev (tauri add cli, tauri dev/build) de l'usage in-app (getMatches/CliExt, permission cli:default). Le tout doit passer scripts/check-config-cli.py --config/--cli sans inventer de champ ni de commande.",
+  "assertions": []
+}
